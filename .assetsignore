@@ -2,4 +2,5 @@
 .wrangler
 wrangler.jsonc
 worker.js
+.dev.vars.example
 *.md
