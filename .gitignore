@@ -4,6 +4,7 @@
 !.dev.vars.example
 .env*
 !.env.example
+tail_*.txt
 
 # WisB governance docs should never live in this public repo
 *_EXECUTION_BRIEF.md

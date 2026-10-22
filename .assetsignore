@@ -3,4 +3,5 @@
 wrangler.jsonc
 worker.js
 .dev.vars.example
+tail_*.txt
 *.md
