@@ -1,4 +1,5 @@
 .git
 .wrangler
 wrangler.jsonc
+worker.js
 *.md

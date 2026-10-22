@@ -1,0 +1,10 @@
+# Copy this file to .dev.vars for local `wrangler dev` testing. .dev.vars is
+# gitignored and never committed. In production, set the same names as
+# Worker secrets with: wrangler secret put <NAME>
+
+AIRTABLE_TOKEN=patXXXXXXXXXXXXXX
+AIRTABLE_BASE_ID=appXXXXXXXXXXXXXX
+AIRTABLE_TABLE_NAME=Members
+
+RESEND_API_KEY=re_XXXXXXXXXXXXXXXX
+RESEND_FROM_ADDRESS=Entrepreneurs Lyon <connect@entrepreneurlyon.fr>

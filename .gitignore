@@ -1,0 +1,12 @@
+# wrangler files
+.wrangler
+.dev.vars*
+!.dev.vars.example
+.env*
+!.env.example
+
+# WisB governance docs should never live in this public repo
+*_EXECUTION_BRIEF.md
+*_STRATEGIC_DIRECTIVE.md
+*_SURGICAL_PLAN.md
+PROJECT_BRIEF.md
