@@ -9,5 +9,13 @@
   "assets": {
     "directory": ".",
     "binding": "ASSETS"
+  },
+  "routes": [
+    { "pattern": "entrepreneurlyon.fr", "custom_domain": true }
+  ],
+  "vars": {
+    "AIRTABLE_BASE_ID": "app6vusOAMYDLql8S",
+    "AIRTABLE_TABLE_NAME": "Members",
+    "RESEND_FROM_ADDRESS": "connect@entrepreneurlyon.fr"
   }
 }
