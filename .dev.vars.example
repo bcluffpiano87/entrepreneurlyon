@@ -7,4 +7,4 @@ AIRTABLE_BASE_ID=appXXXXXXXXXXXXXX
 AIRTABLE_TABLE_NAME=Members
 
 RESEND_API_KEY=re_XXXXXXXXXXXXXXXX
-RESEND_FROM_ADDRESS=Entrepreneurs Lyon <connect@entrepreneurlyon.fr>
+RESEND_FROM_ADDRESS=Entrepreneur Lyon <connect@entrepreneurlyon.fr>

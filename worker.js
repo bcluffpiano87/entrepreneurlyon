@@ -1,4 +1,4 @@
-// Entrepreneurs Lyon - mediated "Connect" feature
+// Entrepreneur Lyon - mediated "Connect" feature
 //
 // Handles two routes on top of the static site:
 //   GET  /connect.html  -> renders the intermediary connect form for a given
@@ -16,7 +16,7 @@
 //   AIRTABLE_TABLE_NAME    e.g. Members
 //   RESEND_API_KEY
 //   RESEND_FROM_ADDRESS    a verified Resend sending address, e.g.
-//                          "Entrepreneurs Lyon <connect@entrepreneurlyon.fr>"
+//                          "Entrepreneur Lyon <connect@entrepreneurlyon.fr>"
 
 const RECORD_ID_PATTERN = /^rec[a-zA-Z0-9]{14}$/;
 
@@ -51,12 +51,12 @@ function renderConnectForm(url) {
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Connect - Entrepreneurs Lyon</title>
+  <title>Connect - Entrepreneur Lyon</title>
   <link rel="stylesheet" href="/styles.css">
 </head>
 <body>
   <header class="site-header">
-    <a href="/" class="site-title">Entrepreneurs Lyon</a>
+    <a href="/" class="site-title">Entrepreneur Lyon</a>
     <nav class="site-nav">
       <a href="/members.html">Members</a>
       <a href="/privacy.html">Privacy</a>
@@ -91,7 +91,7 @@ function renderConnectForm(url) {
   </div>
 
   <footer class="site-footer">
-    <span>Entrepreneurs Lyon</span>
+    <span>Entrepreneur Lyon</span>
     <a href="/privacy.html">Privacy</a>
   </footer>
 </body>
@@ -171,8 +171,8 @@ async function handleConnectSubmit(request, env) {
       from: env.RESEND_FROM_ADDRESS,
       to: [targetEmail],
       reply_to: requesterEmail,
-      subject: `${requesterName} would like to connect with you - Entrepreneurs Lyon`,
-      html: `<p><strong>${escapeHtml(requesterName)}</strong> (${escapeHtml(requesterEmail)}) would like to connect with you through the Entrepreneurs Lyon member directory.</p><p>${escapeHtml(message)}</p><p>Reply directly to this email to respond to them.</p>`
+      subject: `${requesterName} would like to connect with you - Entrepreneur Lyon`,
+      html: `<p><strong>${escapeHtml(requesterName)}</strong> (${escapeHtml(requesterEmail)}) would like to connect with you through the Entrepreneur Lyon member directory.</p><p>${escapeHtml(message)}</p><p>Reply directly to this email to respond to them.</p>`
     })
   });
 
@@ -189,12 +189,12 @@ function errorPage(message) {
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Connect - Entrepreneurs Lyon</title>
+  <title>Connect - Entrepreneur Lyon</title>
   <link rel="stylesheet" href="/styles.css">
 </head>
 <body>
   <header class="site-header">
-    <a href="/" class="site-title">Entrepreneurs Lyon</a>
+    <a href="/" class="site-title">Entrepreneur Lyon</a>
     <nav class="site-nav">
       <a href="/members.html">Members</a>
       <a href="/privacy.html">Privacy</a>
@@ -210,7 +210,7 @@ function errorPage(message) {
   </div>
 
   <footer class="site-footer">
-    <span>Entrepreneurs Lyon</span>
+    <span>Entrepreneur Lyon</span>
     <a href="/privacy.html">Privacy</a>
   </footer>
 </body>
