@@ -3,202 +3,32 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Entrepreneur Lyon - Join Our Community</title>
+  <title>Entrepreneur Lyon - Lyon's International Entrepreneur Community</title>
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
   <header class="site-header">
     <a href="/" class="site-title">Entrepreneur Lyon</a>
     <nav class="site-nav">
-      <a href="/members.html">Members</a>
-      <a href="/privacy.html">Privacy</a>
+      <a href="/become-a-member.html">Become A Member</a>
+      <a href="/members.html">Member Services</a>
     </nav>
   </header>
 
   <div class="container">
     <h1>Entrepreneur Lyon</h1>
-    <p class="subtitle">Welcome to the Lyon international entrepreneur community. We meet regularly to share what we have learned and help each other succeed in building businesses in France. Fill this in so we can connect you with the right people and plan meetups that work for everyone.</p>
+    <p class="subtitle">Welcome to the Lyon international entrepreneur community. We meet regularly to share what we have learned and help each other succeed in building businesses in France.</p>
 
-    <form action="/api/signup" method="POST">
-      <input type="hidden" name="_redirect" value="https://entrepreneurlyon.fr/thank-you">
-      <input type="text" name="_honeypot" style="display:none" tabindex="-1" autocomplete="off">
+    <!--
+      PLACEHOLDER: full "about the group" copy to come from the Chairman.
+      This section will be expanded with more detail about the community,
+      who it is for, and how meetups work once that copy is provided.
+    -->
 
-      <div class="section-label">About You</div>
-
-      <div class="row">
-        <div class="field">
-          <label>Full Name <span class="required">*</span></label>
-          <input type="text" name="name" required placeholder="Your name">
-        </div>
-        <div class="field">
-          <label>Email <span class="required">*</span></label>
-          <input type="email" name="email" required placeholder="your@email.com">
-        </div>
-      </div>
-
-      <div class="field">
-        <label>Company / What are you building?</label>
-        <input type="text" name="company" placeholder="Tell us about your project">
-      </div>
-
-      <div class="row">
-        <div class="field">
-          <label>Industry</label>
-          <select name="industry">
-            <option value="">Select...</option>
-            <option value="Technology / SaaS">Technology / SaaS</option>
-            <option value="Consulting / Services">Consulting / Services</option>
-            <option value="Food & Beverage">Food & Beverage</option>
-            <option value="Health & Wellness">Health & Wellness</option>
-            <option value="Finance / Fintech">Finance / Fintech</option>
-            <option value="Education / Training">Education / Training</option>
-            <option value="Creative / Design / Media">Creative / Design / Media</option>
-            <option value="Retail / E-Commerce">Retail / E-Commerce</option>
-            <option value="Manufacturing / Industrial">Manufacturing / Industrial</option>
-            <option value="Real Estate / Property">Real Estate / Property</option>
-            <option value="Legal / Compliance">Legal / Compliance</option>
-            <option value="Other">Other</option>
-          </select>
-        </div>
-        <div class="field">
-          <label>Stage</label>
-          <select name="stage">
-            <option value="">Select...</option>
-            <option value="Working on a business idea">Working on a business idea</option>
-            <option value="Early stage of a live business (0-1 year)">Early stage of a live business (0-1 year)</option>
-            <option value="Established business">Established business</option>
-          </select>
-        </div>
-      </div>
-
-      <div class="field">
-        <label>Where do you work?</label>
-        <select name="work_location">
-          <option value="">Select...</option>
-          <option value="Home">Home</option>
-          <option value="Office">Office</option>
-          <option value="Co-Working Space">Co-Working Space</option>
-          <option value="Hybrid">Hybrid</option>
-          <option value="Mobile / On-Site">Mobile / On-Site</option>
-        </select>
-      </div>
-
-      <div class="section-label">Meetup Preferences</div>
-
-      <div class="field">
-        <label>What types of meetups work best for you?</label>
-        <div class="checkbox-group">
-          <label><input type="checkbox" name="meetup_types" value="Daytime Coffee / Lunch"> Daytime Coffee / Lunch</label>
-          <label><input type="checkbox" name="meetup_types" value="Happy Hours / Aperitifs"> Happy Hours / Aperitifs</label>
-          <label><input type="checkbox" name="meetup_types" value="Workshops / Skill Shares"> Workshops / Skill Shares</label>
-          <label><input type="checkbox" name="meetup_types" value="Guest Speaker Events"> Guest Speaker Events</label>
-          <label><input type="checkbox" name="meetup_types" value="Co-Working Days"> Co-Working Days</label>
-        </div>
-      </div>
-
-      <div class="field">
-        <label>Availability</label>
-        <p class="privacy-note" style="margin-top:0;margin-bottom:12px;">Check every day and time that works for you.</p>
-      </div>
-
-      <div class="row">
-        <div class="field">
-          <label>Monday</label>
-          <div class="checkbox-group">
-            <label><input type="checkbox" name="availability_monday" value="Morning"> Morning</label>
-            <label><input type="checkbox" name="availability_monday" value="Lunch"> Lunch</label>
-            <label><input type="checkbox" name="availability_monday" value="Afternoon"> Afternoon</label>
-            <label><input type="checkbox" name="availability_monday" value="Evening"> Evening</label>
-          </div>
-        </div>
-        <div class="field">
-          <label>Tuesday</label>
-          <div class="checkbox-group">
-            <label><input type="checkbox" name="availability_tuesday" value="Morning"> Morning</label>
-            <label><input type="checkbox" name="availability_tuesday" value="Lunch"> Lunch</label>
-            <label><input type="checkbox" name="availability_tuesday" value="Afternoon"> Afternoon</label>
-            <label><input type="checkbox" name="availability_tuesday" value="Evening"> Evening</label>
-          </div>
-        </div>
-      </div>
-
-      <div class="row">
-        <div class="field">
-          <label>Wednesday</label>
-          <div class="checkbox-group">
-            <label><input type="checkbox" name="availability_wednesday" value="Morning"> Morning</label>
-            <label><input type="checkbox" name="availability_wednesday" value="Lunch"> Lunch</label>
-            <label><input type="checkbox" name="availability_wednesday" value="Afternoon"> Afternoon</label>
-            <label><input type="checkbox" name="availability_wednesday" value="Evening"> Evening</label>
-          </div>
-        </div>
-        <div class="field">
-          <label>Thursday</label>
-          <div class="checkbox-group">
-            <label><input type="checkbox" name="availability_thursday" value="Morning"> Morning</label>
-            <label><input type="checkbox" name="availability_thursday" value="Lunch"> Lunch</label>
-            <label><input type="checkbox" name="availability_thursday" value="Afternoon"> Afternoon</label>
-            <label><input type="checkbox" name="availability_thursday" value="Evening"> Evening</label>
-          </div>
-        </div>
-      </div>
-
-      <div class="row">
-        <div class="field">
-          <label>Friday</label>
-          <div class="checkbox-group">
-            <label><input type="checkbox" name="availability_friday" value="Morning"> Morning</label>
-            <label><input type="checkbox" name="availability_friday" value="Lunch"> Lunch</label>
-            <label><input type="checkbox" name="availability_friday" value="Afternoon"> Afternoon</label>
-            <label><input type="checkbox" name="availability_friday" value="Evening"> Evening</label>
-          </div>
-        </div>
-        <div class="field">
-          <label>Saturday</label>
-          <div class="checkbox-group">
-            <label><input type="checkbox" name="availability_saturday" value="Morning"> Morning</label>
-            <label><input type="checkbox" name="availability_saturday" value="Lunch"> Lunch</label>
-            <label><input type="checkbox" name="availability_saturday" value="Afternoon"> Afternoon</label>
-            <label><input type="checkbox" name="availability_saturday" value="Evening"> Evening</label>
-          </div>
-        </div>
-      </div>
-
-      <div class="section-label">How We Can Help</div>
-
-      <div class="field">
-        <label>What industries would you most benefit from connecting with?</label>
-        <input type="text" name="connect_industries" placeholder="e.g. Tech founders, investors, local government...">
-      </div>
-
-      <div class="row">
-        <div class="field">
-          <label>Biggest challenge right now?</label>
-          <input type="text" name="challenge" placeholder="e.g. Finding clients, legal setup, hiring...">
-        </div>
-        <div class="field">
-          <label>What can you help others with?</label>
-          <input type="text" name="can_help" placeholder="e.g. Web development, French admin, fundraising...">
-        </div>
-      </div>
-
-      <div class="consent">
-        <label>
-          <input type="checkbox" name="gdpr_consent" value="yes" required>
-          I agree to have my information stored and used to coordinate community meetups and connect me with other members. My data will not be shared with third parties or used for marketing outside of this community. I can request access to, correction of, or deletion of my data at any time by emailing contact@entrepreneurlyon.fr.
-        </label>
-      </div>
-
-      <div class="consent">
-        <label>
-          <input type="checkbox" name="directory_consent" value="yes">
-          I would like my name, company, industry, and expertise to be visible on the community member directory so other members can find and connect with me.
-        </label>
-        <p class="privacy-note">Data controller: Brian Cluff. Your data is stored securely on Formspark and Airtable (US-based processor operating under Standard Contractual Clauses for EU data transfers) and is accessible only to the community organizer. We do not sell or transfer your data. For complaints, contact the CNIL at cnil.fr.</p>
-      </div>
-
-      <button type="submit">Join the Community</button>
-    </form>
+    <div class="cta-buttons">
+      <a href="/become-a-member.html" class="btn-large btn-primary">Become A Member</a>
+      <a href="/members.html" class="btn-large btn-secondary">Member Services</a>
+    </div>
   </div>
 
   <footer class="site-footer">

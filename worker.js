@@ -70,8 +70,8 @@ function renderConnectForm(url) {
   <header class="site-header">
     <a href="/" class="site-title">Entrepreneur Lyon</a>
     <nav class="site-nav">
-      <a href="/members.html">Members</a>
-      <a href="/privacy.html">Privacy</a>
+      <a href="/become-a-member.html">Become A Member</a>
+      <a href="/members.html">Member Services</a>
     </nav>
   </header>
 
@@ -276,8 +276,8 @@ function alreadySignedUpPage() {
   <header class="site-header">
     <a href="/" class="site-title">Entrepreneur Lyon</a>
     <nav class="site-nav">
-      <a href="/members.html">Members</a>
-      <a href="/privacy.html">Privacy</a>
+      <a href="/become-a-member.html">Become A Member</a>
+      <a href="/members.html">Member Services</a>
     </nav>
   </header>
 
@@ -311,8 +311,8 @@ function errorPage(message) {
   <header class="site-header">
     <a href="/" class="site-title">Entrepreneur Lyon</a>
     <nav class="site-nav">
-      <a href="/members.html">Members</a>
-      <a href="/privacy.html">Privacy</a>
+      <a href="/become-a-member.html">Become A Member</a>
+      <a href="/members.html">Member Services</a>
     </nav>
   </header>
 
