@@ -1,11 +1,19 @@
-// Entrepreneur Lyon - mediated "Connect" feature
+// Entrepreneur Lyon - mediated "Connect" feature, and duplicate-email guard
+// on the main sign-up form
 //
-// Handles two routes on top of the static site:
+// Handles three routes on top of the static site:
 //   GET  /connect.html  -> renders the intermediary connect form for a given
 //                          Airtable record id (?to=recXXXXXXXXXXXXXX)
 //   POST /api/connect   -> validates the requester is an existing member,
 //                          looks up the target member's email in Airtable,
 //                          and sends a mediated introduction email via Resend
+//   POST /api/signup    -> checks Airtable for an existing record with the
+//                          submitted email before forwarding the signup to
+//                          Formspark server-side. If a match already exists,
+//                          shows a friendly page instead of creating a
+//                          duplicate. The existing Formspark -> Zapier ->
+//                          Airtable pipeline is untouched and still runs for
+//                          every genuinely new signup that gets forwarded.
 //
 // Everything else falls through to the normal static-asset handler so the
 // existing site (index.html, members.html, privacy.html, etc.) is untouched.
@@ -30,6 +38,10 @@ export default {
 
     if (url.pathname === "/api/connect" && request.method === "POST") {
       return handleConnectSubmit(request, env);
+    }
+
+    if (url.pathname === "/api/signup" && request.method === "POST") {
+      return handleSignupSubmit(request, env);
     }
 
     return env.ASSETS.fetch(request);
@@ -181,6 +193,109 @@ async function handleConnectSubmit(request, env) {
   }
 
   return Response.redirect(new URL("/connect-sent.html", request.url), 303);
+}
+
+async function handleSignupSubmit(request, env) {
+  let form;
+  try {
+    form = await request.formData();
+  } catch (err) {
+    return htmlResponse(errorPage("We could not read your submission. Please go back and try again."), 400);
+  }
+
+  // Honeypot: pretend success so bots get no signal either way.
+  if ((form.get("_honeypot") || "").toString().trim() !== "") {
+    return Response.redirect(new URL("/thank-you", request.url), 303);
+  }
+
+  const email = (form.get("email") || "").toString().trim();
+
+  // Duplicate check: fail OPEN on any Airtable error. A read hiccup here
+  // should never block a brand new member from signing up - at worst, a
+  // rare duplicate slips through and can be cleaned up manually, which is
+  // far better than blocking real signups during an outage.
+  if (email) {
+    try {
+      const baseUrl = `https://api.airtable.com/v0/${env.AIRTABLE_BASE_ID}/${encodeURIComponent(env.AIRTABLE_TABLE_NAME)}`;
+      const airtableHeaders = { Authorization: `Bearer ${env.AIRTABLE_TOKEN}` };
+      const escapedEmail = email.toLowerCase().replace(/'/g, "\\'");
+      const filterFormula = `LOWER({email})='${escapedEmail}'`;
+      const lookupUrl = `${baseUrl}?filterByFormula=${encodeURIComponent(filterFormula)}&maxRecords=1`;
+
+      const lookupRes = await fetch(lookupUrl, { headers: airtableHeaders });
+      if (lookupRes.ok) {
+        const lookupData = await lookupRes.json();
+        if (lookupData.records && lookupData.records.length > 0) {
+          return htmlResponse(alreadySignedUpPage(), 200);
+        }
+      }
+    } catch (err) {
+      // Swallow and fall through to forwarding the signup below.
+    }
+  }
+
+  // Forward every submitted field (including repeated checkbox-group
+  // entries like availability_monday) to Formspark server-side, exactly as
+  // the browser submitted them. The existing Zapier automation keeps
+  // handling Airtable record creation downstream, unchanged.
+  const forwardBody = new FormData();
+  for (const [key, value] of form.entries()) {
+    if (key === "_honeypot") continue;
+    forwardBody.append(key, value);
+  }
+
+  let formsparkRes;
+  try {
+    formsparkRes = await fetch("https://submit-form.com/9epwvWIJT", {
+      method: "POST",
+      redirect: "manual",
+      headers: { Accept: "application/json" },
+      body: forwardBody
+    });
+  } catch (err) {
+    return htmlResponse(errorPage("We could not submit your signup right now. Please try again shortly."), 502);
+  }
+
+  if (formsparkRes.status >= 400) {
+    return htmlResponse(errorPage("We could not submit your signup right now. Please try again shortly."), 502);
+  }
+
+  return Response.redirect(new URL("/thank-you", request.url), 303);
+}
+
+function alreadySignedUpPage() {
+  return `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Already Signed Up - Entrepreneur Lyon</title>
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <header class="site-header">
+    <a href="/" class="site-title">Entrepreneur Lyon</a>
+    <nav class="site-nav">
+      <a href="/members.html">Members</a>
+      <a href="/privacy.html">Privacy</a>
+    </nav>
+  </header>
+
+  <div class="container">
+    <div class="page-card">
+      <h2>You are already signed up.</h2>
+      <p>We found an existing member record with this email address, so we have not created a duplicate entry.</p>
+      <p>If you would like to update your details, email us at contact@entrepreneurlyon.fr.</p>
+      <p><a href="/">Back to home</a></p>
+    </div>
+  </div>
+
+  <footer class="site-footer">
+    <span>Entrepreneur Lyon</span>
+    <a href="/privacy.html">Privacy</a>
+  </footer>
+</body>
+</html>`;
 }
 
 function errorPage(message) {
