@@ -223,14 +223,16 @@ async function handleSignupSubmit(request, env) {
       const lookupUrl = `${baseUrl}?filterByFormula=${encodeURIComponent(filterFormula)}&maxRecords=1`;
 
       const lookupRes = await fetch(lookupUrl, { headers: airtableHeaders });
+      const lookupBodyText = await lookupRes.text();
+      console.log("SIGNUP_DEBUG lookup status=" + lookupRes.status + " body=" + lookupBodyText);
       if (lookupRes.ok) {
-        const lookupData = await lookupRes.json();
+        const lookupData = JSON.parse(lookupBodyText);
         if (lookupData.records && lookupData.records.length > 0) {
           return htmlResponse(alreadySignedUpPage(), 200);
         }
       }
     } catch (err) {
-      // Swallow and fall through to forwarding the signup below.
+      console.log("SIGNUP_DEBUG exception: " + (err && err.message));
     }
   }
 
