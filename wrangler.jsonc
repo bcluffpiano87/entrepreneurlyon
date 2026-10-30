@@ -10,12 +10,23 @@
     "directory": ".",
     "binding": "ASSETS"
   },
+  "kv_namespaces": [
+    // Run: npx wrangler@4.152.0 kv namespace create RSVP_STORE
+    // Paste the returned id value in place of PASTE_KV_NAMESPACE_ID_HERE below.
+    { "binding": "RSVP_STORE", "id": "6d3711ede5f54eacae4c620a4b567e31" }
+  ],
+  "triggers": {
+    // Every 2 hours: check for events starting within 24h and send reminders
+    "crons": ["0 */2 * * *"]
+  },
   "routes": [
     { "pattern": "entrepreneurlyon.fr", "custom_domain": true }
   ],
   "vars": {
     "AIRTABLE_BASE_ID": "app6vusOAMYDLql8S",
     "AIRTABLE_TABLE_NAME": "Members",
-    "RESEND_FROM_ADDRESS": "connect@entrepreneurlyon.fr"
+    "AIRTABLE_EVENTS_TABLE": "Events",
+    "RESEND_FROM_ADDRESS": "connect@entrepreneurlyon.fr",
+    "ADMIN_EMAIL": "contact@entrepreneurlyon.fr"
   }
 }

@@ -23,6 +23,25 @@ button[type="submit"]:hover { background: #333; }
 .section-label { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; color: #999; margin-bottom: 16px; margin-top: 8px; padding-bottom: 8px; border-bottom: 1px solid #eee; }
 @media (max-width: 480px) { .row { flex-direction: column; gap: 0; } form { padding: 24px 20px; } .container { margin: 20px auto; } }
 
+/* Landing page */
+.landing-header { text-align: center; padding: 60px 20px 0; }
+.landing-title {
+  font-size: 56px; font-weight: 800; letter-spacing: -1px;
+  background: linear-gradient(135deg, #1a1a1a 0%, #4a4a4a 40%, #1a1a1a 60%, #4a4a4a 100%);
+  background-size: 200% 200%;
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  background-clip: text; color: transparent;
+  animation: gradient-shift 6s ease infinite;
+}
+.landing-nav { display: flex; justify-content: center; gap: 28px; flex-wrap: wrap; padding: 20px 20px 0; }
+.landing-nav a { font-size: 16px; font-weight: 600; color: #555; text-decoration: none; position: relative; padding-bottom: 2px; transition: color 0.2s; }
+.landing-nav a::after { content: ''; position: absolute; bottom: 0; left: 0; width: 0; height: 2px; background: #1a1a1a; transition: width 0.3s ease; }
+.landing-nav a:hover { color: #1a1a1a; }
+.landing-nav a:hover::after { width: 100%; }
+.hero-tagline { text-align: center; font-size: 17px; color: #888; }
+@keyframes gradient-shift { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
+@media (max-width: 480px) { .landing-header { padding: 40px 20px 0; } .landing-title { font-size: 36px; } .landing-nav { gap: 20px; } .landing-nav a { font-size: 15px; } }
+
 header.site-header { max-width: 640px; margin: 0 auto; padding: 20px 20px 0; display: flex; justify-content: space-between; align-items: center; }
 header.site-header .site-title { font-size: 18px; font-weight: 700; text-decoration: none; color: #1a1a1a; }
 nav.site-nav { display: flex; gap: 20px; }
@@ -42,10 +61,52 @@ footer.site-footer a { color: #999; text-decoration: underline; }
 .members-frame-wrap { max-width: 960px; margin: 0 auto; padding: 0 20px 40px; }
 .members-frame-wrap iframe { width: 100%; min-height: 1200px; border: none; border-radius: 12px; background: #fff; display: block; }
 
-.cta-buttons { display: flex; gap: 16px; margin-top: 8px; }
-.btn-large { flex: 1; display: block; text-align: center; padding: 18px 24px; border-radius: 10px; font-size: 17px; font-weight: 700; text-decoration: none; }
+.cta-buttons { display: flex; gap: 14px; margin-top: 8px; flex-wrap: wrap; }
+.btn-large { flex: 1 1 180px; display: block; text-align: center; padding: 18px 24px; border-radius: 10px; font-size: 17px; font-weight: 700; text-decoration: none; transition: transform 0.15s ease, box-shadow 0.15s ease; }
+.btn-large:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
 .btn-primary { background: #1a1a1a; color: #fff; }
 .btn-primary:hover { background: #333; }
 .btn-secondary { background: #fff; color: #1a1a1a; border: 2px solid #1a1a1a; }
 .btn-secondary:hover { background: #f5f5f5; }
-@media (max-width: 480px) { .cta-buttons { flex-direction: column; } }
+@media (max-width: 480px) { .cta-buttons { flex-direction: column; } .btn-large { flex: 1 1 auto; } }
+
+.calendar-wrap { max-width: 960px; margin: 0 auto; padding: 0 20px; }
+.calendar-wrap .fc { background: #fff; border-radius: 12px; padding: 16px; }
+.calendar-wrap .fc .fc-toolbar-title { font-size: 20px; }
+.calendar-wrap .fc .fc-button { background: #1a1a1a; border: none; font-size: 13px; padding: 6px 12px; border-radius: 6px; }
+.calendar-wrap .fc .fc-button:hover { background: #333; }
+.calendar-wrap .fc .fc-button-active { background: #444; }
+.calendar-wrap .fc .fc-daygrid-event { cursor: pointer; border-radius: 4px; padding: 2px 4px; font-size: 13px; }
+.calendar-wrap .fc .fc-list { border-radius: 0 0 12px 12px; }
+.calendar-wrap .fc .fc-list-event { cursor: pointer; }
+.calendar-wrap .fc .fc-list-event-title { font-weight: 500; }
+.calendar-wrap .fc .fc-list-empty { padding: 32px; text-align: center; color: #666; }
+
+.event-modal-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.4); z-index: 1000; justify-content: center; align-items: center; }
+.event-modal { background: #fff; border-radius: 12px; padding: 32px; max-width: 480px; width: 90%; position: relative; max-height: 80vh; overflow-y: auto; }
+.event-modal h2 { font-size: 20px; margin-bottom: 12px; padding-right: 32px; }
+.event-modal-close { position: absolute; top: 12px; right: 16px; background: none; border: none; font-size: 24px; cursor: pointer; color: #666; line-height: 1; padding: 4px; }
+.event-modal-close:hover { color: #1a1a1a; }
+.modal-date { font-size: 14px; color: #555; margin-bottom: 8px; }
+.modal-location { font-size: 14px; color: #555; margin-bottom: 12px; font-weight: 600; }
+.modal-desc { font-size: 15px; color: #333; line-height: 1.5; white-space: pre-wrap; }
+
+/* RSVP badge shown on calendar event cells */
+.rsvp-badge { display: inline-block; background: #e8f5e9; color: #2e7d32; font-size: 11px; font-weight: 600; padding: 1px 6px; border-radius: 10px; margin-left: 6px; vertical-align: middle; white-space: nowrap; }
+
+/* RSVP section inside the event modal */
+.modal-rsvp { margin-top: 20px; padding-top: 16px; border-top: 1px solid #eee; }
+.rsvp-count { font-size: 14px; color: #555; margin-bottom: 12px; font-weight: 600; }
+.btn-rsvp { display: inline-block; padding: 10px 20px; background: #1a1a1a; color: #fff; border: none; border-radius: 8px; font-size: 15px; font-weight: 600; cursor: pointer; font-family: inherit; }
+.btn-rsvp:hover { background: #333; }
+.rsvp-fields { margin: 12px 0; }
+.rsvp-fields .field { margin-bottom: 12px; }
+.rsvp-fields .field label { display: block; font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; color: #555; margin-bottom: 4px; }
+.rsvp-fields .field input { width: 100%; padding: 8px 10px; border: 1px solid #ddd; border-radius: 6px; font-size: 14px; font-family: inherit; background: #fafafa; }
+.rsvp-fields .field input:focus { outline: none; border-color: #333; background: #fff; }
+.btn-rsvp-submit { padding: 10px 20px; background: #1a1a1a; color: #fff; border: none; border-radius: 8px; font-size: 15px; font-weight: 600; cursor: pointer; font-family: inherit; }
+.btn-rsvp-submit:hover { background: #333; }
+.btn-rsvp-submit:disabled { background: #999; cursor: not-allowed; }
+.rsvp-message { margin-top: 12px; font-size: 14px; padding: 8px 12px; border-radius: 6px; }
+.rsvp-success { background: #e8f5e9; color: #2e7d32; }
+.rsvp-error { background: #ffebee; color: #c62828; }

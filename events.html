@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Events - Entrepreneur Lyon</title>
+  <link rel="stylesheet" href="styles.css">
+  <script src="/vendor/fullcalendar.min.js"></script>
+</head>
+<body>
+  <header class="landing-header">
+    <h1 class="landing-title"><a href="/" style="text-decoration:none;-webkit-text-fill-color:inherit;">Entrepreneur Lyon</a></h1>
+  </header>
+
+  <nav class="landing-nav">
+    <a href="/become-a-member.html">Become A Member</a>
+    <a href="/members.html">Member Services</a>
+  </nav>
+
+  <div class="container">
+    <h1>Events</h1>
+    <p class="subtitle">Community events and meetups. Click on an event to see details.</p>
+  </div>
+
+  <div class="calendar-wrap">
+    <div id="calendar"></div>
+  </div>
+
+  <div class="container" style="margin-top: 24px;">
+    <a href="/request-event.html" class="btn-large btn-primary" style="display:block;text-align:center;">Request to Add an Event</a>
+  </div>
+
+  <div id="event-modal" class="event-modal-overlay" style="display:none;">
+    <div class="event-modal">
+      <button class="event-modal-close" aria-label="Close">&times;</button>
+      <h2 id="modal-title"></h2>
+      <div id="modal-body"></div>
+    </div>
+  </div>
+
+  <footer class="site-footer">
+    <span>Entrepreneur Lyon</span>
+    <a href="/privacy.html">Privacy</a>
+  </footer>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      var calendarEl = document.getElementById('calendar');
+      var currentEventId = null;
+      var currentEventName = null;
+
+      var calendar = new FullCalendar.Calendar(calendarEl, {
+        // Use list view on narrow screens where the 7-column month grid is too cramped.
+        // The Month/List toggle buttons remain available on all screen sizes.
+        initialView: window.innerWidth < 768 ? 'listMonth' : 'dayGridMonth',
+        headerToolbar: {
+          left: 'prev,next today',
+          center: 'title',
+          right: 'dayGridMonth,listMonth'
+        },
+        buttonText: {
+          month: 'Month',
+          list: 'List'
+        },
+        events: function (info, successCallback, failureCallback) {
+          fetch('/api/events')
+            .then(function (res) { return res.json(); })
+            .then(function (data) { successCallback(data); })
+            .catch(function (err) { failureCallback(err); });
+        },
+
+        // Append an RSVP count badge to each event cell when count > 0.
+        eventDidMount: function (info) {
+          var count = info.event.extendedProps.rsvp_count || 0;
+          if (count <= 0) return;
+          var badge = document.createElement('span');
+          badge.className = 'rsvp-badge';
+          badge.textContent = count + ' going';
+          // Month grid: insert after the title span.
+          var titleEl = info.el.querySelector('.fc-event-title');
+          if (titleEl) {
+            titleEl.insertAdjacentElement('afterend', badge);
+            return;
+          }
+          // List view: insert after the anchor inside the title cell.
+          var listLink = info.el.querySelector('.fc-list-event-title a');
+          if (listLink) {
+            listLink.insertAdjacentElement('afterend', badge);
+            return;
+          }
+          info.el.appendChild(badge);
+        },
+
+        eventClick: function (info) {
+          info.jsEvent.preventDefault();
+          var props = info.event.extendedProps;
+          var title = info.event.title;
+
+          currentEventId = info.event.id || null;
+          currentEventName = title;
+
+          document.getElementById('modal-title').textContent = title;
+
+          var start = info.event.start;
+          var end = info.event.end;
+          var opts = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' };
+          var dateStr = start ? start.toLocaleDateString('en-GB', opts) : '';
+          if (end) {
+            dateStr += ' to ' + end.toLocaleDateString('en-GB', opts);
+          }
+
+          var bodyHtml = '';
+          if (dateStr) bodyHtml += '<p class="modal-date">' + dateStr + '</p>';
+          if (props.location) bodyHtml += '<p class="modal-location">' + escapeHtml(props.location) + '</p>';
+          if (props.description) bodyHtml += '<p class="modal-desc">' + escapeHtml(props.description) + '</p>';
+
+          // RSVP section
+          var rsvpCount = props.rsvp_count || 0;
+          var countText = rsvpCount > 0
+            ? (rsvpCount === 1 ? '1 person going' : rsvpCount + ' people going')
+            : 'Be the first to RSVP';
+
+          bodyHtml += '<div class="modal-rsvp">' +
+            '<p class="rsvp-count" id="modal-rsvp-count">' + escapeHtml(countText) + '</p>';
+
+          if (currentEventId) {
+            bodyHtml +=
+              '<button type="button" class="btn-rsvp" id="rsvp-btn">I am going</button>' +
+              '<div id="rsvp-form" style="display:none;">' +
+                '<div class="rsvp-fields">' +
+                  '<div class="field">' +
+                    '<label>Your Name <span class="required">*</span></label>' +
+                    '<input type="text" id="rsvp-name" placeholder="Your name">' +
+                  '</div>' +
+                  '<div class="field">' +
+                    '<label>Your Email <span class="required">*</span></label>' +
+                    '<input type="email" id="rsvp-email" placeholder="your@email.com">' +
+                  '</div>' +
+                '</div>' +
+                '<input type="text" id="rsvp-honeypot" style="display:none;" tabindex="-1" autocomplete="off">' +
+                '<button type="button" class="btn-rsvp-submit" id="rsvp-submit">Confirm</button>' +
+              '</div>' +
+              '<p id="rsvp-message" class="rsvp-message" style="display:none;"></p>';
+          }
+
+          bodyHtml += '</div>';
+
+          document.getElementById('modal-body').innerHTML = bodyHtml;
+          document.getElementById('event-modal').style.display = 'flex';
+
+          if (currentEventId) {
+            document.getElementById('rsvp-btn').addEventListener('click', function () {
+              document.getElementById('rsvp-form').style.display = 'block';
+              this.style.display = 'none';
+            });
+
+            document.getElementById('rsvp-submit').addEventListener('click', function () {
+              var name = (document.getElementById('rsvp-name').value || '').trim();
+              var email = (document.getElementById('rsvp-email').value || '').trim();
+              var honeypot = document.getElementById('rsvp-honeypot').value || '';
+              var submitBtn = this;
+
+              if (!name || !email) {
+                showRsvpMessage('Please enter your name and email.', false);
+                return;
+              }
+
+              submitBtn.disabled = true;
+              submitBtn.textContent = 'Sending...';
+
+              fetch('/api/rsvp', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                  event_id: currentEventId,
+                  event_name: currentEventName,
+                  name: name,
+                  email: email,
+                  _honeypot: honeypot
+                })
+              })
+              .then(function (res) { return res.json(); })
+              .then(function (data) {
+                if (data.success) {
+                  var newCount = data.rsvp_count || 0;
+                  var newText = newCount === 1 ? '1 person going' : newCount + ' people going';
+                  document.getElementById('modal-rsvp-count').textContent = newText;
+                  document.getElementById('rsvp-form').style.display = 'none';
+                  showRsvpMessage('You are going! See you there.', true);
+                  // Refresh calendar so badge counts reflect the new RSVP.
+                  calendar.refetchEvents();
+                } else {
+                  submitBtn.disabled = false;
+                  submitBtn.textContent = 'Confirm';
+                  showRsvpMessage(data.error || 'Something went wrong. Please try again.', false);
+                }
+              })
+              .catch(function () {
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Confirm';
+                showRsvpMessage('Something went wrong. Please try again.', false);
+              });
+            });
+          }
+        }
+      });
+
+      calendar.render();
+
+      document.querySelector('.event-modal-close').addEventListener('click', function () {
+        document.getElementById('event-modal').style.display = 'none';
+      });
+      document.getElementById('event-modal').addEventListener('click', function (e) {
+        if (e.target === this) this.style.display = 'none';
+      });
+
+      function escapeHtml(str) {
+        var d = document.createElement('div');
+        d.textContent = str;
+        return d.innerHTML;
+      }
+
+      function showRsvpMessage(msg, isSuccess) {
+        var el = document.getElementById('rsvp-message');
+        if (!el) return;
+        el.textContent = msg;
+        el.style.display = 'block';
+        el.className = 'rsvp-message ' + (isSuccess ? 'rsvp-success' : 'rsvp-error');
+      }
+    });
+  </script>
+</body>
+</html>

@@ -6,6 +6,11 @@
 !.env.example
 tail_*.txt
 
+# npm (FullCalendar installed for vendor copy)
+node_modules
+package.json
+package-lock.json
+
 # WisB governance docs should never live in this public repo
 *_EXECUTION_BRIEF.md
 *_STRATEGIC_DIRECTIVE.md
