@@ -26,6 +26,12 @@
     "AIRTABLE_BASE_ID": "app6vusOAMYDLql8S",
     "AIRTABLE_TABLE_NAME": "Members",
     "AIRTABLE_EVENTS_TABLE": "Events",
+    // Create this table yourself in the same Airtable base before the
+    // Language Services page goes live. Fields expected by worker.js:
+    // name (text), email (email), languages (multiple select),
+    // participation_type (multiple select), background (long text),
+    // can_help_with (long text).
+    "AIRTABLE_LANGUAGE_TABLE": "Language Specialists",
     "RESEND_FROM_ADDRESS": "connect@entrepreneurlyon.fr",
     "ADMIN_EMAIL": "contact@entrepreneurlyon.fr"
   }

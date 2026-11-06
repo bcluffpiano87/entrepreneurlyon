@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Language Services - Entrepreneur Lyon</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="landing-header">
+    <h1 class="landing-title"><a href="/" style="text-decoration:none;-webkit-text-fill-color:inherit;">Entrepreneur Lyon</a></h1>
+  </header>
+
+  <nav class="landing-nav">
+    <div class="nav-row">
+      <a href="/become-a-member.html">Become A Member</a>
+      <a href="/members.html">Member Services</a>
+    </div>
+    <div class="nav-row">
+      <a href="/events.html">Events</a>
+    </div>
+    <div class="nav-row">
+      <a href="/register-language-specialist.html">Register As Language Specialist</a>
+    </div>
+  </nav>
+
+  <div class="container">
+    <h1>Language Services</h1>
+    <p class="subtitle">Members of the community who can help with languages: casual conversation exchange, private lessons, or business language coaching. Find someone below and request to connect - your message is emailed to them directly without exposing their email address to you.</p>
+  </div>
+
+  <div class="container" id="lang-list-container" style="margin-top: -16px;">
+    <p class="lang-field-value">Loading...</p>
+  </div>
+
+  <div class="container" style="margin-top: 8px;">
+    <a href="/register-language-specialist.html" class="btn-large btn-primary" style="display:block;text-align:center;">Register As Language Specialist</a>
+  </div>
+
+  <footer class="site-footer">
+    <span>Entrepreneur Lyon</span>
+    <a href="/privacy.html">Privacy</a>
+  </footer>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      var container = document.getElementById('lang-list-container');
+
+      function escapeHtml(str) {
+        var d = document.createElement('div');
+        d.textContent = str;
+        return d.innerHTML;
+      }
+
+      function renderTags(items, extraClass) {
+        if (!items || items.length === 0) return '';
+        return '<div class="lang-tags">' + items.map(function (t) {
+          return '<span class="lang-tag' + (extraClass ? ' ' + extraClass : '') + '">' + escapeHtml(t) + '</span>';
+        }).join('') + '</div>';
+      }
+
+      fetch('/api/language-specialists')
+        .then(function (res) {
+          if (!res.ok) throw new Error('Request failed');
+          return res.json();
+        })
+        .then(function (specialists) {
+          if (!Array.isArray(specialists) || specialists.length === 0) {
+            container.innerHTML = '<div class="lang-empty">No language specialists have registered yet. <a href="/register-language-specialist.html">Be the first to register</a>.</div>';
+            return;
+          }
+
+          var html = '<div class="lang-grid">';
+          specialists.forEach(function (s) {
+            html += '<div class="lang-card">';
+            html += '<div class="lang-card-name">' + escapeHtml(s.name || 'Member') + '</div>';
+            html += renderTags(s.languages, '');
+            html += renderTags(s.participation_type, 'lang-tag-type');
+            if (s.background) {
+              html += '<div class="lang-field-label">Background</div>';
+              html += '<div class="lang-field-value">' + escapeHtml(s.background) + '</div>';
+            }
+            if (s.can_help_with) {
+              html += '<div class="lang-field-label">Can Help With</div>';
+              html += '<div class="lang-field-value">' + escapeHtml(s.can_help_with) + '</div>';
+            }
+            html += '<a class="lang-connect-btn" href="/connect.html?to=' + encodeURIComponent(s.id) + '&type=language">Request to Connect</a>';
+            html += '</div>';
+          });
+          html += '</div>';
+          container.innerHTML = html;
+        })
+        .catch(function () {
+          container.innerHTML = '<div class="lang-error">We could not load the language specialists list right now. Please refresh the page or try again shortly.</div>';
+        });
+    });
+  </script>
+</body>
+</html>

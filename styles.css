@@ -33,14 +33,15 @@ button[type="submit"]:hover { background: #333; }
   background-clip: text; color: transparent;
   animation: gradient-shift 6s ease infinite;
 }
-.landing-nav { display: flex; justify-content: center; gap: 28px; flex-wrap: wrap; padding: 20px 20px 0; }
+.landing-nav { display: flex; flex-direction: column; align-items: center; gap: 10px; padding: 20px 20px 0; }
+.landing-nav .nav-row { display: flex; justify-content: center; gap: 28px; flex-wrap: wrap; }
 .landing-nav a { font-size: 16px; font-weight: 600; color: #555; text-decoration: none; position: relative; padding-bottom: 2px; transition: color 0.2s; }
 .landing-nav a::after { content: ''; position: absolute; bottom: 0; left: 0; width: 0; height: 2px; background: #1a1a1a; transition: width 0.3s ease; }
 .landing-nav a:hover { color: #1a1a1a; }
 .landing-nav a:hover::after { width: 100%; }
 .hero-tagline { text-align: center; font-size: 17px; color: #888; }
 @keyframes gradient-shift { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
-@media (max-width: 480px) { .landing-header { padding: 40px 20px 0; } .landing-title { font-size: 36px; } .landing-nav { gap: 20px; } .landing-nav a { font-size: 15px; } }
+@media (max-width: 480px) { .landing-header { padding: 40px 20px 0; } .landing-title { font-size: 36px; } .landing-nav { gap: 8px; } .landing-nav .nav-row { gap: 16px; } .landing-nav a { font-size: 15px; } }
 
 header.site-header { max-width: 640px; margin: 0 auto; padding: 20px 20px 0; display: flex; justify-content: space-between; align-items: center; }
 header.site-header .site-title { font-size: 18px; font-weight: 700; text-decoration: none; color: #1a1a1a; }
@@ -110,3 +111,18 @@ footer.site-footer a { color: #999; text-decoration: underline; }
 .rsvp-message { margin-top: 12px; font-size: 14px; padding: 8px 12px; border-radius: 6px; }
 .rsvp-success { background: #e8f5e9; color: #2e7d32; }
 .rsvp-error { background: #ffebee; color: #c62828; }
+
+/* Language Specialists directory */
+.lang-grid { display: flex; flex-direction: column; gap: 16px; margin-top: 8px; }
+.lang-card { background: #fff; border-radius: 12px; padding: 24px; }
+.lang-card-name { font-size: 18px; font-weight: 700; margin-bottom: 10px; }
+.lang-tags { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; }
+.lang-tag { background: #f0f0f0; color: #444; font-size: 12px; font-weight: 600; padding: 4px 10px; border-radius: 12px; }
+.lang-tag-type { background: #e8f0fe; color: #1a56db; }
+.lang-field-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: #999; margin-top: 12px; margin-bottom: 4px; }
+.lang-field-value { font-size: 14px; color: #333; line-height: 1.5; white-space: pre-wrap; }
+.lang-connect-btn { display: inline-block; margin-top: 16px; padding: 10px 18px; background: #1a1a1a; color: #fff; border-radius: 8px; font-size: 14px; font-weight: 600; text-decoration: none; }
+.lang-connect-btn:hover { background: #333; }
+.lang-empty { background: #fff; border-radius: 12px; padding: 32px; text-align: center; color: #666; }
+.lang-empty a { color: #1a1a1a; font-weight: 600; }
+.lang-error { background: #fff; border-radius: 12px; padding: 32px; text-align: center; color: #c62828; }

@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Register As Language Specialist - Entrepreneur Lyon</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="landing-header">
+    <h1 class="landing-title"><a href="/" style="text-decoration:none;-webkit-text-fill-color:inherit;">Entrepreneur Lyon</a></h1>
+  </header>
+
+  <nav class="landing-nav">
+    <div class="nav-row">
+      <a href="/become-a-member.html">Become A Member</a>
+      <a href="/members.html">Member Services</a>
+    </div>
+    <div class="nav-row">
+      <a href="/events.html">Events</a>
+    </div>
+    <div class="nav-row">
+      <a href="/language-services.html">Language Services</a>
+    </div>
+  </nav>
+
+  <div class="container">
+    <h1>Register As Language Specialist</h1>
+    <p class="subtitle">Speak another language or help others with theirs? Tell us about it. Whether you want to join a casual language exchange, offer private lessons, or coach people on business language skills, this helps us list you on the Language Services page so members can find exactly what they are looking for.</p>
+
+    <form action="/api/language-signup" method="POST">
+      <input type="text" name="_honeypot" style="display:none" tabindex="-1" autocomplete="off">
+
+      <div class="section-label">About You</div>
+
+      <div class="row">
+        <div class="field">
+          <label>Full Name <span class="required">*</span></label>
+          <input type="text" name="name" required placeholder="Your name">
+        </div>
+        <div class="field">
+          <label>Email <span class="required">*</span></label>
+          <input type="email" name="email" required placeholder="your@email.com">
+        </div>
+      </div>
+
+      <div class="section-label">Languages</div>
+
+      <div class="field">
+        <label>Which languages do you speak or teach? <span class="required">*</span></label>
+        <div class="checkbox-group">
+          <label><input type="checkbox" name="languages" value="English"> English</label>
+          <label><input type="checkbox" name="languages" value="French"> French</label>
+          <label><input type="checkbox" name="languages" value="Spanish"> Spanish</label>
+          <label><input type="checkbox" name="languages" value="German"> German</label>
+          <label><input type="checkbox" name="languages" value="Italian"> Italian</label>
+          <label><input type="checkbox" name="languages" value="Portuguese"> Portuguese</label>
+          <label><input type="checkbox" name="languages" value="Mandarin Chinese"> Mandarin Chinese</label>
+          <label><input type="checkbox" name="languages" value="Arabic"> Arabic</label>
+          <label><input type="checkbox" name="languages" value="Japanese"> Japanese</label>
+          <label><input type="checkbox" name="languages" value="Russian"> Russian</label>
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Other language(s) not listed above</label>
+        <input type="text" name="other_language" placeholder="e.g. Dutch, Korean...">
+      </div>
+
+      <div class="section-label">How Would You Like to Participate?</div>
+
+      <div class="field">
+        <label>Select all that apply <span class="required">*</span></label>
+        <div class="checkbox-group" id="participation-group">
+          <label><input type="checkbox" name="participation_type" value="Language Exchange (Clubs)"> Language Exchange (Clubs)</label>
+          <label><input type="checkbox" name="participation_type" value="Specialist - Private Lessons"> Specialist - Private Lessons</label>
+          <label><input type="checkbox" name="participation_type" value="Business Language Specialist"> Business Language Specialist</label>
+        </div>
+        <p class="privacy-note" style="margin-top:0;">Language Exchange is informal, club-based conversation practice - no background required. Private Lessons and Business Language Specialist require a background or credential, described below.</p>
+      </div>
+
+      <div class="field" id="background-field" style="display:none;">
+        <label>Your Background / Credentials <span class="required">*</span></label>
+        <textarea name="background" id="background-input" rows="3" placeholder="e.g. Certified teacher, native speaker, professional translator, 5 years of business English coaching..." style="width:100%;padding:10px 12px;border:1px solid #ddd;border-radius:6px;font-size:15px;font-family:inherit;background:#fafafa;resize:vertical;"></textarea>
+      </div>
+
+      <div class="field">
+        <label>Anything else members should know about how you can help?</label>
+        <input type="text" name="can_help_with" placeholder="e.g. Available evenings, beginner-friendly, exam prep...">
+      </div>
+
+      <div class="consent">
+        <label>
+          <input type="checkbox" name="gdpr_consent" value="yes" required>
+          I agree to have my information stored and used to connect me with members looking for language help. My data will not be shared with third parties or used for marketing outside of this community. I can request access to, correction of, or deletion of my data at any time by emailing contact@entrepreneurlyon.fr.
+        </label>
+        <p class="privacy-note">Data controller: Brian Cluff, a coordinator and admin of Entrepreneur Lyon. Your data is stored securely in Airtable (US-based processor operating under Standard Contractual Clauses for EU data transfers) and is accessible only to the community organizer. We do not sell or transfer your data. For complaints, contact the CNIL at cnil.fr.</p>
+      </div>
+
+      <button type="submit">Submit</button>
+    </form>
+  </div>
+
+  <footer class="site-footer">
+    <span>Entrepreneur Lyon</span>
+    <a href="/privacy.html">Privacy</a>
+  </footer>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      var specialistValues = ['Specialist - Private Lessons', 'Business Language Specialist'];
+      var checkboxes = document.querySelectorAll('#participation-group input[name="participation_type"]');
+      var backgroundField = document.getElementById('background-field');
+      var backgroundInput = document.getElementById('background-input');
+
+      function toggleBackground() {
+        var anyChecked = false;
+        checkboxes.forEach(function (cb) {
+          if (cb.checked && specialistValues.indexOf(cb.value) !== -1) {
+            anyChecked = true;
+          }
+        });
+        backgroundField.style.display = anyChecked ? 'block' : 'none';
+        if (anyChecked) {
+          backgroundInput.setAttribute('required', 'required');
+        } else {
+          backgroundInput.removeAttribute('required');
+        }
+      }
+
+      checkboxes.forEach(function (cb) {
+        cb.addEventListener('change', toggleBackground);
+      });
+
+      toggleBackground();
+    });
+  </script>
+</body>
+</html>
