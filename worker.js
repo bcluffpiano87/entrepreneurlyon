@@ -78,6 +78,10 @@ export default {
       return handleNewsletterAssemble(request, env);
     }
 
+    if (url.pathname === "/newsletter" && request.method === "GET") {
+      return handleNewsletterPublic(env);
+    }
+
     if (url.pathname === "/api/language-signup" && request.method === "POST") {
       return handleLanguageSignupSubmit(request, env);
     }
@@ -118,6 +122,7 @@ function renderConnectForm(url) {
       <a href="/events.html">Events</a>
       <a href="/register-language-specialist.html">Register As Language Specialist</a>
       <a href="/language-services.html">Language Services</a>
+      <a href="/workshop-handouts.html">Workshop Handouts</a>
     </nav>
   </header>
 
@@ -303,6 +308,21 @@ async function handleSignupSubmit(request, env) {
 }
 
 async function handleGetEvents(env) {
+  // Cache Airtable response in KV for 5 minutes to reduce API calls
+  const CACHE_KEY = "cache:events";
+  const CACHE_TTL = 300; // 5 minutes in seconds
+  if (env.RSVP_STORE) {
+    try {
+      const cached = await env.RSVP_STORE.get(CACHE_KEY);
+      if (cached) {
+        return new Response(cached, {
+          status: 200,
+          headers: { "Content-Type": "application/json", "Cache-Control": "public, max-age=60" }
+        });
+      }
+    } catch { /* cache miss, continue to Airtable */ }
+  }
+
   const baseUrl = `https://api.airtable.com/v0/${env.AIRTABLE_BASE_ID}/${encodeURIComponent(env.AIRTABLE_EVENTS_TABLE)}`;
   const airtableHeaders = { Authorization: `Bearer ${env.AIRTABLE_TOKEN}` };
 
@@ -357,12 +377,18 @@ async function handleGetEvents(env) {
     }
   }));
 
-  return new Response(JSON.stringify(events), {
+  const eventsJson = JSON.stringify(events);
+
+  // Cache in KV for 5 minutes
+  if (env.RSVP_STORE) {
+    try { await env.RSVP_STORE.put(CACHE_KEY, eventsJson, { expirationTtl: CACHE_TTL }); } catch { /* ignore */ }
+  }
+
+  return new Response(eventsJson, {
     status: 200,
-    // No caching: response now includes live RSVP counts from KV.
     headers: {
       "Content-Type": "application/json",
-      "Cache-Control": "no-store"
+      "Cache-Control": "public, max-age=60"
     }
   });
 }
@@ -586,6 +612,7 @@ function renderRequestEventForm() {
       <a href="/events.html">Events</a>
       <a href="/register-language-specialist.html">Register As Language Specialist</a>
       <a href="/language-services.html">Language Services</a>
+      <a href="/workshop-handouts.html">Workshop Handouts</a>
     </nav>
   </header>
 
@@ -886,6 +913,7 @@ function alreadySignedUpPage() {
       <a href="/events.html">Events</a>
       <a href="/register-language-specialist.html">Register As Language Specialist</a>
       <a href="/language-services.html">Language Services</a>
+      <a href="/workshop-handouts.html">Workshop Handouts</a>
     </nav>
   </header>
 
@@ -924,6 +952,7 @@ function errorPage(message) {
       <a href="/events.html">Events</a>
       <a href="/register-language-specialist.html">Register As Language Specialist</a>
       <a href="/language-services.html">Language Services</a>
+      <a href="/workshop-handouts.html">Workshop Handouts</a>
     </nav>
   </header>
 
@@ -968,6 +997,21 @@ async function handleNewsletterAssemble(request, env) {
 
   if (!RECORD_ID_PATTERN.test(issueId)) {
     return jsonResponse({ error: "Invalid issue record id." }, 400);
+  }
+
+  // Cache assembled newsletter in KV for 2 minutes to reduce API calls
+  const NL_CACHE_KEY = "cache:newsletter:" + issueId;
+  const NL_CACHE_TTL = 120;
+  if (env.RSVP_STORE) {
+    try {
+      const cached = await env.RSVP_STORE.get(NL_CACHE_KEY);
+      if (cached) {
+        return new Response(cached, {
+          status: 200,
+          headers: { "Content-Type": "text/html; charset=utf-8", "Cache-Control": "no-store" }
+        });
+      }
+    } catch { /* cache miss */ }
   }
 
   const airtableHeaders = { Authorization: `Bearer ${env.AIRTABLE_TOKEN}` };
@@ -1017,6 +1061,13 @@ async function handleNewsletterAssemble(request, env) {
     return content;
   }
 
+  function sectionImageUrl(sectionNum) {
+    const rec = sectionsByNumber.get(sectionNum);
+    if (!rec || !rec.fields) return "";
+    const url = rec.fields.image_url != null ? String(rec.fields.image_url).trim() : "";
+    return url;
+  }
+
   // Check if a skippable section should be included (approved + non-empty).
   function includeOptional(sectionNum) {
     const rec = sectionsByNumber.get(sectionNum);
@@ -1033,59 +1084,105 @@ async function handleNewsletterAssemble(request, env) {
     ? String(s3Rec.fields.section_name).trim()
     : "Topic of the Month";
 
-  // Build HTML newsletter directly from section data
+  // Build HTML newsletter from section data
 
   function rm(rawText) {
     return renderMarkdown(escapeHtml(rawText));
   }
 
-  function nlSection(heading, bodyHtml, cls) {
-    const h = heading
-      ? "<h2 class=\"nl-heading\">" + escapeHtml(heading) + "</h2>\n"
-      : "";
-    return "<div class=\"nl-sec" + (cls ? " " + cls : "") + "\">\n" + h + bodyHtml + "\n</div>";
+  function imgTag(url) {
+    if (!url) return "";
+    return '<div class="sec-img"><img src="' + escapeHtml(url) + '" alt=""></div>';
   }
 
-  function partnersHtml() {
+  function placeholder(label, ratio) {
+    return '<div class="ph ph--' + ratio + '"><span>' + escapeHtml(label) + '</span></div>';
+  }
+
+  function card(id, num, heading, bodyHtml, extra) {
+    const idAttr = id ? ' id="' + id + '"' : "";
+    const cls = extra || "";
+    const kicker = num
+      ? '<p class="kicker"><b>' + String(num).padStart(2, "0") + '</b> ' + escapeHtml(heading) + '</p>\n'
+      : "";
+    const h2 = heading ? '<h2>' + escapeHtml(heading) + '</h2>\n' : "";
+    return '<div class="card' + (cls ? " " + cls : "") + '"' + idAttr + '>\n' + kicker + h2 + bodyHtml + '\n</div>';
+  }
+
+  // Nav pills (only sections that exist)
+  const navItems = [];
+  navItems.push({ id: "events", label: "Events" });
+  navItems.push({ id: "topic", label: topicHeading });
+  if (includeOptional(4)) navItems.push({ id: "partners", label: "Partners" });
+  navItems.push({ id: "highlights", label: "Highlights" });
+  navItems.push({ id: "need-to-know", label: "Need to Know" });
+  navItems.push({ id: "coworking", label: "Coworking" });
+  navItems.push({ id: "community", label: "Community" });
+  const navPills = navItems.map(function(n) {
+    return '<a href="#' + n.id + '">' + escapeHtml(n.label) + '</a>';
+  }).join("\n    ");
+
+  // Section images (from image_url field) or placeholders
+  const s2Img = sectionImageUrl(2) ? imgTag(sectionImageUrl(2)) : placeholder("Event photos", "wide");
+  const s3Img = sectionImageUrl(3) ? imgTag(sectionImageUrl(3)) : placeholder("Feature image", "wide");
+  const s5Img = sectionImageUrl(5) ? imgTag(sectionImageUrl(5)) : placeholder("Entrepreneur photo", "wide");
+  const s10Img = sectionImageUrl(10) ? imgTag(sectionImageUrl(10)) : placeholder("Coworking space photo", "3x2");
+
+  // Partners grid (section 4)
+  function partnersGrid() {
     const raw = sectionBody(4);
     const blocks = raw.split(/\n\n+/).filter(function(b) { return b.trim() !== ""; });
-    const cols = blocks
-      .map(function(b) { return "<div class=\"nl-partner\">" + rm(b) + "</div>"; })
-      .join("");
-    return "<div class=\"nl-sec\">\n<h2 class=\"nl-heading\">Partners</h2>\n<div class=\"nl-partners\">" + cols + "</div>\n</div>";
+    return '<div class="grid3">' +
+      blocks.map(function(b) { return "<div>" + rm(b) + "</div>"; }).join("") +
+      "</div>";
   }
 
-  const D = "<div class=\"nl-div\"></div>";
+  // Need to Know sub-section block
+  function n2kBlock(label, icon, sectionNum) {
+    var text = sectionBody(sectionNum);
+    var isPlaceholder = text === "[Section not yet approved]";
+    var inner = isPlaceholder
+      ? '<p class="n2k-empty">Coming this issue</p>'
+      : rm(text);
+    return '<div class="n2k-sub">' +
+      '<div class="n2k-label"><span class="n2k-icon">' + icon + '</span> ' + escapeHtml(label) + '</div>' +
+      inner + '</div>';
+  }
 
-  const bodyParts = [
-    nlSection("", rm(sectionBody(1)), "nl-open"),
-    D,
-    nlSection("Events", rm(sectionBody(2)), ""),
-    D,
-    nlSection(topicHeading, rm(sectionBody(3)), ""),
-  ];
+  // Build cards array
+  const cards = [];
 
+  // 1: Opening blurb (no kicker, no nav anchor)
+  cards.push(card("", 0, "", '<div class="opening">' + rm(sectionBody(1)) + '</div>', ""));
+
+  // 2: Events
+  cards.push(card("events", 2, "Events", s2Img + rm(sectionBody(2)), ""));
+
+  // 3: Topic of the Month (dark band)
+  cards.push(card("topic", 3, topicHeading, s3Img + rm(sectionBody(3)), "card--dark"));
+
+  // 4: Partners (optional)
   if (includeOptional(4)) {
-    bodyParts.push(D, partnersHtml());
+    cards.push(card("partners", 4, "Partners", partnersGrid(), ""));
   }
 
-  bodyParts.push(
-    D,
-    nlSection("Entrepreneur Highlights", rm(sectionBody(5)), ""),
-    D,
-    nlSection("Entrepreneur Need to Know", rm(sectionBody(6)), "")
-  );
+  // 5: Entrepreneur Highlights
+  cards.push(card("highlights", 5, "Entrepreneur Highlights", s5Img + rm(sectionBody(5)), ""));
 
-  if (includeOptional(7)) {
-    bodyParts.push(D, nlSection("Agencies", rm(sectionBody(7)), ""));
-  }
+  // 6-9: Need to Know — one card, four sub-sections from four separate Airtable rows
+  var n2kHtml = '<div class="n2k">' +
+    n2kBlock("Money", "\u20AC", 6) +
+    n2kBlock("Taxes", "\u25B6", 7) +
+    n2kBlock("Regulations", "\u25A0", 8) +
+    n2kBlock("Agencies", "\u2605", 9) +
+    '</div>';
+  cards.push(card("need-to-know", 0, "Entrepreneur Need to Know", n2kHtml, ""));
 
-  bodyParts.push(
-    D,
-    nlSection("Free Coworking", rm(sectionBody(8)), ""),
-    D,
-    nlSection("Community Events", rm(sectionBody(9)), "")
-  );
+  // 10: Free Coworking
+  cards.push(card("coworking", 10, "Free Coworking", s10Img + rm(sectionBody(10)), ""));
+
+  // 11: Community Events
+  cards.push(card("community", 11, "Community Events", rm(sectionBody(11)), ""));
 
   const safeMonth = escapeHtml(month || "Unknown month");
 
@@ -1097,46 +1194,106 @@ async function handleNewsletterAssemble(request, env) {
   <title>Entrepreneur Lyon -- ${safeMonth}</title>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; scroll-padding-top: 64px; }
+    @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
     body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #f5f5f5; color: #1a1a1a; line-height: 1.6; }
-    .nl-wrap { max-width: 640px; margin: 40px auto; padding: 0 20px 60px; }
-    .nl-header { background: #fff; border-radius: 12px; padding: 32px; margin-bottom: 8px; text-align: center; }
-    .nl-brand { font-size: 28px; font-weight: 800; letter-spacing: -0.5px; }
-    .nl-issue { font-size: 15px; color: #666; margin-top: 6px; }
-    .nl-card { background: #fff; border-radius: 12px; overflow: hidden; }
-    .nl-div { height: 1px; background: #eee; margin: 0 32px; }
-    .nl-sec { padding: 28px 32px; }
-    .nl-open { font-size: 17px; }
-    .nl-heading { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: #999; margin-bottom: 14px; }
-    .nl-sec p { margin-bottom: 12px; color: #333; }
-    .nl-sec p:last-child { margin-bottom: 0; }
-    .nl-sec h3 { font-size: 16px; font-weight: 700; margin: 16px 0 8px; }
-    .nl-sec ul { margin: 8px 0 12px 20px; }
-    .nl-sec li { margin-bottom: 6px; color: #333; }
-    .nl-sec a { color: #1a1a1a; }
-    .nl-sec blockquote { border-left: 3px solid #ddd; margin: 16px 0; padding: 10px 16px; border-radius: 0 6px 6px 0; background: #f9f9f9; }
-    .nl-sec blockquote p { font-style: italic; color: #555; }
-    .nl-sec img { max-width: 100%; border-radius: 8px; margin: 8px 0; }
-    .nl-partners { display: flex; gap: 20px; }
-    .nl-partner { flex: 1; min-width: 0; }
-    .nl-footer { text-align: center; font-size: 12px; color: #999; margin-top: 24px; line-height: 1.8; }
+
+    .progress { position: fixed; top: 0; left: 0; right: 0; height: 3px; background: #1a1a1a; transform-origin: 0 50%; transform: scaleX(0); z-index: 11; }
+    @supports (animation-timeline: scroll()) {
+      .progress { animation: grow 1ms linear both; animation-timeline: scroll(root); }
+    }
+    @keyframes grow { to { transform: scaleX(1); } }
+
+    .wrap { max-width: 640px; margin: 0 auto; padding: 16px 16px 60px; }
+
+    .masthead { background: #fff; border-radius: 12px; padding: 28px; text-align: center; margin-bottom: 0; }
+    .masthead-title { font-size: 32px; font-weight: 800; letter-spacing: -0.5px; }
+    .masthead-issue { font-size: 15px; color: #666; margin-top: 6px; }
+
+    .nav { position: sticky; top: 0; z-index: 10; background: rgba(245,245,245,.85); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); display: flex; gap: 6px; overflow-x: auto; padding: 10px 0; scrollbar-width: none; scroll-snap-type: x proximity; margin: 12px 0; }
+    .nav::-webkit-scrollbar { display: none; }
+    .nav a { flex: none; scroll-snap-align: start; padding: 7px 12px; border-radius: 999px; background: #fff; color: #1a1a1a; font-size: 13px; font-weight: 600; text-decoration: none; white-space: nowrap; }
+    .nav a:hover { background: #1a1a1a; color: #fff; }
+
+    .card { background: #fff; border-radius: 12px; padding: 28px; margin-bottom: 16px; }
+    .card--dark { background: #1a1a1a; color: #fff; }
+    .card--dark .kicker { color: #999; }
+    .card--dark .kicker b { color: #fff; }
+    .card--dark h2 { color: #fff; }
+    .card--dark h3 { color: #fff; }
+    .card--dark p { color: #eee; }
+    .card--dark li { color: #eee; }
+    .card--dark a { color: #fff; text-decoration: underline; }
+    .card--dark blockquote { border-left-color: #666; }
+    .card--dark .ph { border-color: #444; background: #222; color: #666; }
+
+    .kicker { font-size: 12px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: #888; margin: 0 0 6px; }
+    .kicker b { color: #1a1a1a; margin-right: 6px; }
+    .card--dark .kicker b { color: #fff; }
+
+    h2 { font-size: 24px; font-weight: 700; margin-bottom: 16px; }
+    .card p { margin-bottom: 12px; color: #333; font-size: 17px; line-height: 1.6; }
+    .card p:last-child { margin-bottom: 0; }
+    .card h3 { font-size: 16px; font-weight: 700; margin: 16px 0 8px; }
+    .card ul { margin: 8px 0 12px 20px; }
+    .card li { margin-bottom: 6px; color: #333; font-size: 17px; line-height: 1.6; }
+    .card a { color: #1a1a1a; }
+    .card img { max-width: 100%; border-radius: 10px; display: block; }
+
+    .opening p { font-size: 18px; }
+
+    blockquote { margin: 24px 0 0; padding: 0 0 0 20px; border-left: 3px solid #1a1a1a; font-size: 20px; line-height: 1.45; font-style: italic; }
+    blockquote p { font-size: 20px !important; line-height: 1.45 !important; font-style: italic; }
+
+    .sec-img { margin: 0 0 20px; border-radius: 10px; overflow: hidden; }
+    .sec-img img { width: 100%; height: auto; display: block; }
+
+    .ph { border: 1.5px dashed #ccc; border-radius: 10px; background: #fafafa; display: flex; align-items: center; justify-content: center; text-align: center; color: #999; font-size: 13px; padding: 20px; margin: 0 0 20px; }
+    .ph--wide { aspect-ratio: 16 / 9; }
+    .ph--3x2 { aspect-ratio: 3 / 2; }
+
+    .n2k { display: flex; flex-direction: column; gap: 0; }
+    .n2k-sub { padding: 20px 0; border-top: 1px solid #eee; }
+    .n2k-sub:first-child { border-top: none; padding-top: 0; }
+    .n2k-sub:last-child { padding-bottom: 0; }
+    .n2k-label { font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; color: #1a1a1a; margin-bottom: 10px; display: flex; align-items: center; gap: 6px; }
+    .n2k-icon { display: inline-flex; align-items: center; justify-content: center; width: 24px; height: 24px; border-radius: 6px; background: #f5f5f5; font-size: 12px; }
+    .n2k-empty { font-style: italic; color: #999 !important; font-size: 14px !important; }
+    .n2k-sub ul { margin: 8px 0 4px 20px; }
+    .n2k-sub li { margin-bottom: 6px; }
+    .n2k-sub strong { font-variant-numeric: tabular-nums; }
+
+    .grid3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+
+    .nl-footer { text-align: center; font-size: 12px; color: #999; margin-top: 8px; line-height: 1.8; }
+
+    @supports (animation-timeline: view()) {
+      @media (prefers-reduced-motion: no-preference) {
+        .card { animation: reveal 1ms linear both; animation-timeline: view(); animation-range: entry 0% entry 40%; }
+      }
+    }
+    @keyframes reveal { from { opacity: .3; transform: translateY(16px); } to { opacity: 1; transform: none; } }
+
     @media (max-width: 480px) {
-      .nl-wrap { margin: 20px auto; padding: 0 12px 40px; }
-      .nl-sec { padding: 20px; }
-      .nl-div { margin: 0 20px; }
-      .nl-brand { font-size: 22px; }
-      .nl-partners { flex-direction: column; }
+      .wrap { padding: 8px 12px 40px; }
+      .masthead { padding: 20px; }
+      .masthead-title { font-size: 28px; }
+      .card { padding: 20px; }
+      .grid3 { grid-template-columns: 1fr; }
     }
   </style>
 </head>
 <body>
-<div class="nl-wrap">
-  <div class="nl-header">
-    <div class="nl-brand">Entrepreneur Lyon</div>
-    <div class="nl-issue">${safeMonth}</div>
+<div class="progress"></div>
+<div class="wrap">
+  <div class="masthead">
+    <div class="masthead-title">Entrepreneur Lyon</div>
+    <div class="masthead-issue">${safeMonth}</div>
   </div>
-  <div class="nl-card">
-    ${bodyParts.join("\n    ")}
-  </div>
+  <nav class="nav" id="top">
+    ${navPills}
+  </nav>
+  ${cards.join("\n  ")}
   <div class="nl-footer">
     <div>Entrepreneur Lyon -- entrepreneurlyon.fr</div>
     <div>The English-first working group for people building a business in France from Lyon.</div>
@@ -1145,9 +1302,80 @@ async function handleNewsletterAssemble(request, env) {
 </body>
 </html>`;
 
+  // Cache in KV for 2 minutes
+  if (env.RSVP_STORE) {
+    try { await env.RSVP_STORE.put(NL_CACHE_KEY, page, { expirationTtl: NL_CACHE_TTL }); } catch { /* ignore */ }
+  }
+
   return new Response(page, {
     status: 200,
     headers: { "Content-Type": "text/html; charset=utf-8", "Cache-Control": "no-store" }
+  });
+}
+
+async function handleNewsletterPublic(env) {
+  const airtableHeaders = { Authorization: `Bearer ${env.AIRTABLE_TOKEN}` };
+  const issuesTableUrl = `https://api.airtable.com/v0/${env.AIRTABLE_BASE_ID}/${encodeURIComponent("Newsletter Issues")}`;
+
+  let latestIssueId = null;
+  try {
+    const params = new URLSearchParams();
+    params.set("filterByFormula", "{published}=1");
+    params.append("sort[0][field]", "month");
+    params.append("sort[0][direction]", "desc");
+    params.set("maxRecords", "1");
+
+    const res = await fetch(`${issuesTableUrl}?${params.toString()}`, { headers: airtableHeaders });
+    if (res.ok) {
+      const data = await res.json();
+      if (data.records && data.records.length > 0) {
+        latestIssueId = data.records[0].id;
+      }
+    }
+  } catch {
+    // Fall through to empty page
+  }
+
+  if (!latestIssueId) {
+    const emptyPage = `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Newsletter - Entrepreneur Lyon</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #f5f5f5; color: #1a1a1a; line-height: 1.6; display: grid; place-items: center; min-height: 100vh; }
+    .msg { text-align: center; padding: 40px; }
+    .msg h1 { font-size: 24px; margin-bottom: 8px; }
+    .msg p { color: #666; }
+    .msg a { color: #1a1a1a; }
+  </style>
+</head>
+<body>
+  <div class="msg">
+    <h1>Newsletter</h1>
+    <p>No newsletter published yet. Check back soon.</p>
+    <p style="margin-top:16px"><a href="/">Back to home</a></p>
+  </div>
+</body>
+</html>`;
+    return new Response(emptyPage, {
+      status: 200,
+      headers: { "Content-Type": "text/html; charset=utf-8", "Cache-Control": "public, max-age=300" }
+    });
+  }
+
+  // Reuse handleNewsletterAssemble logic with the found issue ID
+  const fakeUrl = new URL("https://entrepreneurlyon.fr/api/newsletter/assemble?issue=" + latestIssueId);
+  const fakeRequest = new Request(fakeUrl.toString(), { method: "GET" });
+  const result = await handleNewsletterAssemble(fakeRequest, env);
+
+  // Override cache header for public page
+  const body = await result.text();
+  return new Response(body, {
+    status: result.status,
+    headers: { "Content-Type": "text/html; charset=utf-8", "Cache-Control": "public, max-age=300" }
   });
 }
 
@@ -1206,6 +1434,19 @@ function renderMarkdown(text) {
     s = s.replace(/\[([^\]]+)\]\(([^)]+)\)/g, "<a href=\"$2\">$1</a>");
     s = s.replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>");
     s = s.replace(/\*([^*]+)\*/g, "<em>$1</em>");
+    // Auto-link full URLs (https://... or http://...)
+    s = s.replace(/(^|[\s(])(https?:\/\/[^\s<]+)/g, function(m, pre, url) {
+      var clean = url.replace(/[.,;:!?)]+$/, "");
+      var trail = url.slice(clean.length);
+      return pre + "<a href=\"" + clean + "\">" + clean + "</a>" + trail;
+    });
+    // Auto-link bare domains (e.g. culturefusion-lyon.com, rdi.asso.fr)
+    s = s.replace(/(^|[\s(])([a-zA-Z0-9][\w-]*(?:\.[a-zA-Z0-9][\w-]*)*\.(?:com|fr|org|net|eu|io|co|uk|de|info|biz|ly|app|dev|tech|site|me|gov)(?:\/[^\s<]*)?)/gi, function(m, pre, url) {
+      if (pre === "/") return m;
+      var clean = url.replace(/[.,;:!?)]+$/, "");
+      var trail = url.slice(clean.length);
+      return pre + "<a href=\"https://" + clean + "\">" + clean + "</a>" + trail;
+    });
     return s;
   }
 
@@ -1236,3 +1477,4 @@ function renderMarkdown(text) {
   flushP(); closeUl(); closeBq();
   return out.join("\n");
 }
+

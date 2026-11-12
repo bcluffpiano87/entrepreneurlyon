@@ -126,3 +126,12 @@ footer.site-footer a { color: #999; text-decoration: underline; }
 .lang-empty { background: #fff; border-radius: 12px; padding: 32px; text-align: center; color: #666; }
 .lang-empty a { color: #1a1a1a; font-weight: 600; }
 .lang-error { background: #fff; border-radius: 12px; padding: 32px; text-align: center; color: #c62828; }
+
+/* Workshop Handouts */
+.handout-list { display: flex; flex-direction: column; gap: 16px; margin-top: 16px; }
+.handout-card { display: block; background: #fff; border-radius: 12px; padding: 24px; text-decoration: none; color: inherit; transition: box-shadow 0.2s; border: 1px solid #eee; }
+.handout-card:hover { box-shadow: 0 4px 16px rgba(0,0,0,0.08); }
+.handout-date { display: block; font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; color: #999; margin-bottom: 6px; }
+.handout-title { display: block; font-size: 20px; font-weight: 700; color: #1a1a1a; margin-bottom: 8px; }
+.handout-desc { display: block; font-size: 14px; color: #555; line-height: 1.5; margin-bottom: 8px; }
+.handout-presenter { display: block; font-size: 13px; color: #888; font-style: italic; }

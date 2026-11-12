@@ -1,0 +1,1074 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Building Your Clientele: Best Practices — Workshop Workbook</title>
+<style>
+  /* ── Reset & Base ── */
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --navy: #1a2332;
+    --gold: #c9a84c;
+    --gold-light: #f5ecd5;
+    --body: #000;
+    --placeholder: #555;
+    --row-alt: #f5f5f5;
+    --border: #d0d0d0;
+    --white: #ffffff;
+  }
+
+  @page {
+    size: A4;
+    margin: 0;
+  }
+
+  html { font-size: 14px; }
+
+  body {
+    font-family: -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    color: var(--body);
+    line-height: 1.5;
+    background: var(--white);
+  }
+
+  /* ── Typography ── */
+  h1, h2, h3 {
+    font-family: Georgia, "Times New Roman", Times, serif;
+    color: #000;
+  }
+
+  h2 {
+    font-size: 1.45rem;
+    margin-bottom: 0.4rem;
+    border-bottom: 2px solid var(--gold);
+    padding-bottom: 6px;
+  }
+
+  h3 {
+    font-size: 1.1rem;
+    margin-top: 1rem;
+    margin-bottom: 0.35rem;
+  }
+
+  p, li { margin-bottom: 0.45rem; }
+
+  .intro {
+    background: var(--gold-light);
+    border-left: 4px solid var(--gold);
+    padding: 10px 14px;
+    margin-bottom: 14px;
+    font-size: 0.92rem;
+    line-height: 1.55;
+  }
+
+  .note {
+    font-size: 0.85rem;
+    color: #000;
+    margin-top: 10px;
+    padding: 8px 12px;
+    border: 1px dashed var(--border);
+    background: #fafafa;
+  }
+
+  .quote-block {
+    background: #f9f9f9;
+    border-left: 4px solid var(--navy);
+    padding: 12px 16px;
+    margin: 12px 0;
+    font-size: 0.92rem;
+  }
+
+  .quote-block strong { color: #000; }
+
+  /* ── Tables ── */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 14px;
+    font-size: 0.88rem;
+  }
+
+  th {
+    background: var(--navy);
+    color: var(--white);
+    text-align: left;
+    padding: 8px 10px;
+    font-weight: 600;
+    font-size: 0.82rem;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+  }
+
+  th, th * { color: var(--white); }
+
+  td {
+    padding: 10px 10px;
+    border: 1px solid var(--border);
+    vertical-align: top;
+  }
+
+  tr:nth-child(even) td { background: var(--row-alt); }
+
+  .fill {
+    min-height: 48px;
+    display: block;
+  }
+
+  .fill-tall {
+    min-height: 85px;
+    display: block;
+  }
+
+  .fill-xl {
+    min-height: 130px;
+    display: block;
+  }
+
+  /* Instructions sit above cells — in headers or label rows */
+  th .hint {
+    display: block;
+    font-weight: 400;
+    font-style: italic;
+    font-size: 0.75rem;
+    letter-spacing: 0;
+    text-transform: none;
+    opacity: 0.85;
+    margin-top: 3px;
+    line-height: 1.4;
+  }
+
+  /* Label row between header and write-in rows */
+  tr.label-row td {
+    background: var(--gold-light) !important;
+    color: #000;
+    font-style: italic;
+    font-size: 0.78rem;
+    padding: 6px 10px;
+    line-height: 1.4;
+    border-bottom: 2px solid var(--gold);
+  }
+
+  td.num {
+    width: 32px;
+    text-align: center;
+    font-weight: 600;
+    color: #000;
+  }
+
+  td.check {
+    width: 42px;
+    text-align: center;
+    font-size: 1.1rem;
+  }
+
+  /* ── Sections & Pages ── */
+  .page {
+    page-break-before: always;
+    padding: 18mm 16mm 22mm 16mm;
+  }
+
+  .page:first-child { page-break-before: auto; }
+
+  .page-header {
+    font-size: 0.7rem;
+    color: #000;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 12px;
+    border-bottom: 1px solid #000;
+    padding-bottom: 4px;
+  }
+
+  .page-footer {
+    font-size: 0.68rem;
+    color: #000;
+    text-align: center;
+    margin-top: 18px;
+    padding-top: 8px;
+    border-top: 1px solid #ccc;
+  }
+
+  /* ── QR Code ── */
+  .qr-corner {
+    position: absolute;
+    top: 6mm;
+    right: 4mm;
+    text-align: center;
+  }
+
+  .qr-corner img {
+    width: 80px;
+    height: 80px;
+  }
+
+  .qr-corner .qr-label {
+    font-size: 0.6rem;
+    color: #000;
+    margin-top: 2px;
+    letter-spacing: 0.3px;
+  }
+
+  /* ── Cover Page ── */
+  .cover {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 90vh;
+    text-align: center;
+    position: relative;
+  }
+
+  .cover-rule {
+    width: 80px;
+    height: 3px;
+    background: var(--gold);
+    margin: 24px auto;
+  }
+
+  .cover h1 {
+    font-size: 2.6rem;
+    line-height: 1.2;
+    margin-bottom: 0;
+  }
+
+  .cover .subtitle {
+    font-family: Georgia, "Times New Roman", Times, serif;
+    font-size: 1.3rem;
+    color: #000;
+    margin-top: 6px;
+    letter-spacing: 1px;
+  }
+
+  .cover .meta {
+    font-size: 0.95rem;
+    color: #000;
+    margin-top: 28px;
+    line-height: 2;
+  }
+
+  .cover .cta {
+    margin-top: 36px;
+    font-size: 1.05rem;
+    font-weight: 600;
+    color: #000;
+    border: 2px solid var(--gold);
+    padding: 12px 28px;
+    display: inline-block;
+  }
+
+  /* ── Source List ── */
+  ol.sources {
+    padding-left: 22px;
+    font-size: 0.92rem;
+  }
+
+  ol.sources li {
+    margin-bottom: 6px;
+    line-height: 1.6;
+  }
+
+  ol.sources li em { color: #000; }
+
+  /* ── Feel-good questions ── */
+  ol.feel-good {
+    padding-left: 22px;
+    margin-bottom: 14px;
+  }
+
+  ol.feel-good li {
+    font-size: 0.92rem;
+    margin-bottom: 4px;
+    font-style: italic;
+    color: #000;
+  }
+
+  .key-question {
+    background: var(--gold-light);
+    border: 2px solid var(--gold);
+    padding: 12px 16px;
+    margin: 12px 0;
+    font-size: 0.95rem;
+    font-style: italic;
+    color: #000;
+    text-align: center;
+  }
+
+  /* ── Print Styles ── */
+  @media print {
+    body { font-size: 12px; margin: 0; padding: 0; }
+    .page { page-break-before: always; padding: 18mm 16mm 22mm 16mm; }
+    .page:first-child { page-break-before: auto; }
+    tr { page-break-inside: avoid; }
+    table { page-break-inside: auto; }
+    thead { display: table-header-group; }
+    .cover { min-height: 100vh; }
+    .no-print { display: none; }
+    .page-footer { position: relative; bottom: 0; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ════════════════════════════════════════════════════════════════ -->
+<!-- PAGE 1: COVER                                                  -->
+<!-- ════════════════════════════════════════════════════════════════ -->
+<div class="page cover">
+  <div class="qr-corner">
+    <img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=https://entrepreneurlyon.fr" alt="entrepreneurlyon.fr">
+    <div class="qr-label">entrepreneurlyon.fr</div>
+  </div>
+  <div>
+    <div class="cover-rule"></div>
+    <h1>Building Your Clientele:<br>Best Practices</h1>
+    <div class="subtitle">Workshop Workbook</div>
+    <div class="cover-rule"></div>
+    <div class="meta">
+      November 13, 2026<br>
+      Hosted by: <strong>Entrepreneur Lyon</strong><br>
+      Presented by: <strong>Brian Cluff</strong>
+    </div>
+    <div class="cta">Fill in each section for YOUR business.<br>Take this home and execute.</div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════════════════════════ -->
+<!-- PAGE 2: YOUR BUSINESS SNAPSHOT                                 -->
+<!-- ════════════════════════════════════════════════════════════════ -->
+<div class="page">
+  <div class="page-header">Building Your Clientele: Best Practices</div>
+
+  <h2>Your Business Snapshot</h2>
+  <p class="intro">Before we start building, we need to know where you're starting from. Be honest — this workbook is for you, not for anyone else.</p>
+
+  <table>
+    <thead>
+      <tr>
+        <th style="width:35%;">Field</th>
+        <th>Your Answer</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>Your business name</strong><br><span style="font-size:0.78rem; color:#000; font-style:italic;">Your company's legal name</span></td>
+        <td><span class="fill"></span></td>
+      </tr>
+      <tr>
+        <td><strong>Industry / trade</strong><br><span style="font-size:0.78rem; color:#000; font-style:italic;">e.g., HVAC, dental lab, food service, auto repair, tailoring</span></td>
+        <td><span class="fill"></span></td>
+      </tr>
+      <tr>
+        <td><strong>Number of employees</strong><br><span style="font-size:0.78rem; color:#000; font-style:italic;">Total staff count including yourself</span></td>
+        <td><span class="fill"></span></td>
+      </tr>
+      <tr>
+        <td><strong>Current monthly revenue</strong><br><span style="font-size:0.78rem; color:#000; font-style:italic;">Average monthly revenue in euros</span></td>
+        <td><span class="fill"></span></td>
+      </tr>
+      <tr>
+        <td><strong>How do you currently track compliance?</strong><br><span style="font-size:0.78rem; color:#000; font-style:italic;">Paper, spreadsheets, software, or nothing — be honest</span></td>
+        <td><span class="fill-tall"></span></td>
+      </tr>
+      <tr>
+        <td><strong>When was your last regulatory inspection?</strong><br><span style="font-size:0.78rem; color:#000; font-style:italic;">Date, or "never" if you haven't been inspected</span></td>
+        <td><span class="fill"></span></td>
+      </tr>
+      <tr>
+        <td><strong>What keeps you up at night about your business?</strong><br><span style="font-size:0.78rem; color:#000; font-style:italic;">The one operational worry you can't shake</span></td>
+        <td><span class="fill-tall"></span></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="page-footer">Building Your Clientele: Best Practices — Entrepreneur Lyon — November 13, 2026 &nbsp;|&nbsp; Page 2</div>
+</div>
+
+<!-- ════════════════════════════════════════════════════════════════ -->
+<!-- PAGE 3: FRAMEWORK 1 — YOUR DREAM 10                           -->
+<!-- ════════════════════════════════════════════════════════════════ -->
+<div class="page">
+  <div class="page-header">Building Your Clientele: Best Practices</div>
+
+  <h2>Framework 1 — Your Dream 10</h2>
+  <p style="font-size:0.82rem; color:#000; margin-bottom:8px;">Source: Chet Holmes, <em>The Ultimate Sales Machine</em></p>
+
+  <p class="intro">Your Dream 10 are the clients or accounts that would transform your business if you won them. Not random leads — the BEST possible buyers. List 10 names. For each, identify who makes the buying decision and how you'll reach them.</p>
+
+  <table>
+    <thead>
+      <tr>
+        <th style="width:28px;">#</th>
+        <th style="width:20%;">Company / Person<span class="hint">The business or person you'd most love as a client</span></th>
+        <th style="width:24%;">Why a dream client?<span class="hint">Revenue potential, influence, or referral power?</span></th>
+        <th style="width:20%;">Decision maker<span class="hint">Their actual name — not "the owner"</span></th>
+        <th style="width:22%;">First contact method<span class="hint">Phone, mail, email, intro, or event? Pick one.</span></th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td class="num">1</td><td><span class="fill"></span></td><td><span class="fill"></span></td><td><span class="fill"></span></td><td><span class="fill"></span></td></tr>
+      <tr><td class="num">2</td><td><span class="fill"></span></td><td><span class="fill"></span></td><td><span class="fill"></span></td><td><span class="fill"></span></td></tr>
+      <tr><td class="num">3</td><td><span class="fill"></span></td><td><span class="fill"></span></td><td><span class="fill"></span></td><td><span class="fill"></span></td></tr>
+      <tr><td class="num">4</td><td><span class="fill"></span></td><td><span class="fill"></span></td><td><span class="fill"></span></td><td><span class="fill"></span></td></tr>
+      <tr><td class="num">5</td><td><span class="fill"></span></td><td><span class="fill"></span></td><td><span class="fill"></span></td><td><span class="fill"></span></td></tr>
+      <tr><td class="num">6</td><td><span class="fill"></span></td><td><span class="fill"></span></td><td><span class="fill"></span></td><td><span class="fill"></span></td></tr>
+      <tr><td class="num">7</td><td><span class="fill"></span></td><td><span class="fill"></span></td><td><span class="fill"></span></td><td><span class="fill"></span></td></tr>
+      <tr><td class="num">8</td><td><span class="fill"></span></td><td><span class="fill"></span></td><td><span class="fill"></span></td><td><span class="fill"></span></td></tr>
+      <tr><td class="num">9</td><td><span class="fill"></span></td><td><span class="fill"></span></td><td><span class="fill"></span></td><td><span class="fill"></span></td></tr>
+      <tr><td class="num">10</td><td><span class="fill"></span></td><td><span class="fill"></span></td><td><span class="fill"></span></td><td><span class="fill"></span></td></tr>
+    </tbody>
+  </table>
+
+  <div class="note">
+    <strong>The Holmes Method:</strong> He sent physical mail every Tuesday and followed with a phone call every Thursday for 5–6 weeks before expecting any response. The first 4 months produced zero results. Month 5 produced Xerox. Persistence is the system.
+  </div>
+
+  <div class="page-footer">Building Your Clientele: Best Practices — Entrepreneur Lyon — November 13, 2026 &nbsp;|&nbsp; Page 3</div>
+</div>
+
+<!-- ════════════════════════════════════════════════════════════════ -->
+<!-- PAGE 4: FRAMEWORK 2 — YOUR REFERRAL EMAIL                     -->
+<!-- ════════════════════════════════════════════════════════════════ -->
+<div class="page">
+  <div class="page-header">Building Your Clientele: Best Practices</div>
+
+  <h2>Framework 2 — Your Referral Email</h2>
+  <p style="font-size:0.82rem; color:#000; margin-bottom:8px;">Source: Aaron Ross, <em>Predictable Revenue</em></p>
+
+  <p class="intro">Ross' referral email is deliberately short — under 100 words, no pitch, no links, no attachments. You're asking to be pointed to the right person, not asking for a meeting. This format generated a 9–15% response rate at Salesforce.</p>
+
+  <div class="quote-block">
+    <strong>Subject:</strong> Can you point me in the right direction?<br><br>
+    [First name],<br><br>
+    I'm sorry to trouble you. Would you be so kind as to tell me who is responsible for _____________ at [Company] and how I might get in touch with them?<br><br>
+    Thank you,<br>
+    [Your name]
+  </div>
+
+  <h3>Customize Your Email</h3>
+
+  <table>
+    <thead>
+      <tr>
+        <th>What function or pain point will you insert in the blank?<span class="hint">The ONE thing your ideal client is responsible for that connects to what you sell. Not your product — their problem. e.g., "equipment maintenance scheduling", "food safety documentation"</span></th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td><span class="fill-tall"></span></td></tr>
+    </tbody>
+  </table>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Write your complete email below — fill in all blanks<span class="hint">Subject line, greeting, the question with your pain point inserted, and your sign-off. This is the version you will copy-paste and send.</span></th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td><span class="fill-xl"></span></td></tr>
+    </tbody>
+  </table>
+
+  <h3>Your Follow-Up Schedule</h3>
+  <table>
+    <thead>
+      <tr>
+        <th style="width:12%;">Day</th>
+        <th style="width:32%;">Action</th>
+        <th>Your Notes<span class="hint">Write the specific name, sentence, or commitment for each step</span></th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr class="label-row">
+        <td></td>
+        <td></td>
+        <td>Who will you send it to first? Write their name.</td>
+      </tr>
+      <tr>
+        <td><strong>Day 1</strong></td>
+        <td>Send referral email</td>
+        <td><span class="fill"></span></td>
+      </tr>
+      <tr class="label-row">
+        <td></td>
+        <td></td>
+        <td>One line: "Just bumping this up in case it got buried."</td>
+      </tr>
+      <tr>
+        <td><strong>Day 3</strong></td>
+        <td>Follow up if no response</td>
+        <td><span class="fill"></span></td>
+      </tr>
+      <tr class="label-row">
+        <td></td>
+        <td></td>
+        <td>Add one sentence of context about what you do. Write it here.</td>
+      </tr>
+      <tr>
+        <td><strong>Day 7</strong></td>
+        <td>Second follow-up, different angle</td>
+        <td><span class="fill"></span></td>
+      </tr>
+      <tr class="label-row">
+        <td></td>
+        <td></td>
+        <td>Loss aversion creates urgency. Commit: will you send it? Yes / No</td>
+      </tr>
+      <tr>
+        <td><strong>Day 14</strong></td>
+        <td>Break-up email: "Should I close your file?"</td>
+        <td><span class="fill"></span></td>
+      </tr>
+      <tr class="label-row">
+        <td></td>
+        <td></td>
+        <td>What new info could you share? A regulation, industry news, a case study?</td>
+      </tr>
+      <tr>
+        <td><strong>Day 30</strong></td>
+        <td>Re-engage with new trigger</td>
+        <td><span class="fill"></span></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="page-footer">Building Your Clientele: Best Practices — Entrepreneur Lyon — November 13, 2026 &nbsp;|&nbsp; Page 4</div>
+</div>
+
+<!-- ════════════════════════════════════════════════════════════════ -->
+<!-- PAGE 5: FRAMEWORK 3 — YOUR PHONE SCRIPT                       -->
+<!-- ════════════════════════════════════════════════════════════════ -->
+<div class="page">
+  <div class="page-header">Building Your Clientele: Best Practices</div>
+
+  <h2>Framework 3 — Your Phone Script</h2>
+  <p style="font-size:0.82rem; color:#000; margin-bottom:8px;">Source: Jeb Blount, <em>Fanatical Prospecting</em></p>
+
+  <p class="intro">Blount's 5-step framework: (1) Use their first name, (2) State your name and company, (3) Tell them why you're calling — "The reason I'm calling is…", (4) Bridge with a "because" — a trigger event, stat, or referral, (5) Ask for a specific day and time — then SHUT UP. Silence is your friend.</p>
+
+  <h3>Build Your Script</h3>
+  <table>
+    <thead>
+      <tr>
+        <th style="width:8%;">Step</th>
+        <th style="width:30%;">What to Say</th>
+        <th>Your Version<span class="hint">Write exactly what you will say — practice reading it aloud</span></th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr class="label-row"><td></td><td></td><td>Write the name of the first person you'll call</td></tr>
+      <tr>
+        <td class="num">1</td>
+        <td><strong>Hook</strong><br>"Hi [First name]"</td>
+        <td><span class="fill"></span></td>
+      </tr>
+      <tr class="label-row"><td></td><td></td><td>Your full intro exactly as you'll say it</td></tr>
+      <tr>
+        <td class="num">2</td>
+        <td><strong>Identify yourself</strong><br>"this is [Name] with [Company]"</td>
+        <td><span class="fill"></span></td>
+      </tr>
+      <tr class="label-row"><td></td><td></td><td>NOT a product pitch. A trigger event, regulation, or problem. 1 sentence max.</td></tr>
+      <tr>
+        <td class="num">3</td>
+        <td><strong>Reason for calling</strong><br>"The reason I'm calling is…"</td>
+        <td><span class="fill-tall"></span></td>
+      </tr>
+      <tr class="label-row"><td></td><td></td><td>A stat, trigger event, or mutual connection that makes your reason credible</td></tr>
+      <tr>
+        <td class="num">4</td>
+        <td><strong>Bridge (the "because")</strong><br>"because…"</td>
+        <td><span class="fill-tall"></span></td>
+      </tr>
+      <tr class="label-row"><td></td><td></td><td>Exact day and time. Then practice saying NOTHING after.</td></tr>
+      <tr>
+        <td class="num">5</td>
+        <td><strong>Ask + shut up</strong><br>"How about [day] at [time]?"</td>
+        <td><span class="fill"></span></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3>Write Your Complete Script as One Paragraph</h3>
+  <table>
+    <thead>
+      <tr><th>Combine all 5 steps into one flowing paragraph you can read aloud. Under 30 seconds.</th></tr>
+    </thead>
+    <tbody>
+      <tr><td><span class="fill-xl"></span></td></tr>
+    </tbody>
+  </table>
+
+  <h3>Your Voicemail Version</h3>
+  <p class="intro" style="margin-top:8px;">Blount says: say your phone number FOUR TIMES in one voicemail. Twice at the start, twice at the end. Keep it to 30 seconds. It feels awkward. Do it anyway.</p>
+
+  <table>
+    <thead>
+      <tr>
+        <th style="width:8%;">Step</th>
+        <th style="width:30%;">Content</th>
+        <th>Your Version<span class="hint">Write it out so you can read it naturally</span></th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr class="label-row"><td></td><td></td><td>Same intro as your phone script above</td></tr>
+      <tr><td class="num">1</td><td>Your name + company</td><td><span class="fill"></span></td></tr>
+      <tr class="label-row"><td></td><td></td><td>Write your number here — you'll say it twice, slowly</td></tr>
+      <tr><td class="num">2</td><td>Your phone number ×2</td><td><span class="fill"></span></td></tr>
+      <tr class="label-row"><td></td><td></td><td>Same reason, shortened to 1 sentence</td></tr>
+      <tr><td class="num">3</td><td>Reason for your call</td><td><span class="fill"></span></td></tr>
+      <tr class="label-row"><td></td><td></td><td>What do you have that they WANT? An insight, a resource, a solution?</td></tr>
+      <tr><td class="num">4</td><td>Reason to call you back</td><td><span class="fill"></span></td></tr>
+      <tr class="label-row"><td></td><td></td><td>Same number. Say it slowly.</td></tr>
+      <tr><td class="num">5</td><td>Repeat name + number ×2</td><td><span class="fill"></span></td></tr>
+    </tbody>
+  </table>
+
+  <div class="page-footer">Building Your Clientele: Best Practices — Entrepreneur Lyon — November 13, 2026 &nbsp;|&nbsp; Page 5</div>
+</div>
+
+<!-- ════════════════════════════════════════════════════════════════ -->
+<!-- PAGE 6: FRAMEWORK 4 — YOUR NETWORKING QUESTION                -->
+<!-- ════════════════════════════════════════════════════════════════ -->
+<div class="page">
+  <div class="page-header">Building Your Clientele: Best Practices</div>
+
+  <h2>Framework 4 — Your Networking Question</h2>
+  <p style="font-size:0.82rem; color:#000; margin-bottom:8px;">Source: Bob Burg, <em>Endless Referrals</em></p>
+
+  <p class="intro">At any networking event, ask these 4 "feel-good questions" first. Let them talk for 15–20 minutes. Do not pitch. Then ask the ONE key question that sets you apart from everyone else at the event.</p>
+
+  <h3>The 4 Feel-Good Questions</h3>
+  <ol class="feel-good">
+    <li>"What company are you with?"</li>
+    <li>"What do you do there?"</li>
+    <li>"How long have you been doing that?"</li>
+    <li>"What do you like best about what you do?"</li>
+  </ol>
+
+  <h3>The Key Question</h3>
+  <div class="key-question">
+    "I always enjoy connecting good people with other good people. Tell me — how would I know if someone I'm speaking with would be a good prospect for you?"
+  </div>
+
+  <h3>Your Answer — The Critical Fill-In</h3>
+  <p style="margin-bottom:10px;">When they ask you the same question back (and they will), what do you say?</p>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Your answer to "How would I know if someone is a good prospect for YOU?"<span class="hint">Write a specific, visual, memorable answer. NOT "anyone who needs my product." Think: the copier salesman who said "Look for offices with overflowing wastebaskets next to their copiers." What's YOUR version? What visible sign tells you someone needs what you sell?</span></th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td><span class="fill-xl"></span></td></tr>
+    </tbody>
+  </table>
+
+  <div class="note">
+    <strong>Practice saying this out loud 3 times before the event.</strong> It must feel natural, not rehearsed. If it sounds like a pitch, rewrite it. If a stranger can picture it, you've got it right.
+  </div>
+
+  <div class="page-footer">Building Your Clientele: Best Practices — Entrepreneur Lyon — November 13, 2026 &nbsp;|&nbsp; Page 6</div>
+</div>
+
+<!-- ════════════════════════════════════════════════════════════════ -->
+<!-- PAGE 7: FRAMEWORK 5 — YOUR OFFER                              -->
+<!-- ════════════════════════════════════════════════════════════════ -->
+<div class="page">
+  <div class="page-header">Building Your Clientele: Best Practices</div>
+
+  <h2>Framework 5 — Your Offer</h2>
+  <p style="font-size:0.82rem; color:#000; margin-bottom:8px;">Source: Alex Hormozi, <em>$100M Offers</em></p>
+
+  <p class="intro">Hormozi's Value Equation: <strong>Value = (Dream Outcome × Perceived Likelihood) ÷ (Time Delay × Effort)</strong>. Increase the top two, decrease the bottom two. Pros attack the bottom — make it immediate and effortless.</p>
+
+  <h3>Part A: Your Value Equation</h3>
+  <table>
+    <thead>
+      <tr>
+        <th style="width:16%;">Lever</th>
+        <th style="width:34%;">Question</th>
+        <th>Your Answer</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr class="label-row"><td></td><td></td><td>The emotional end-state: peace of mind, pride, relief, confidence. Be specific.</td></tr>
+      <tr>
+        <td><strong>Dream Outcome ↑</strong></td>
+        <td>What does your client FEEL when you've done your job perfectly?</td>
+        <td><span class="fill-tall"></span></td>
+      </tr>
+      <tr class="label-row"><td></td><td></td><td>A case study, demo, guarantee, or track record. Your strongest proof.</td></tr>
+      <tr>
+        <td><strong>Perceived Likelihood ↑</strong></td>
+        <td>Why should they believe it will work?</td>
+        <td><span class="fill-tall"></span></td>
+      </tr>
+      <tr class="label-row"><td></td><td></td><td>Not the final result — the FIRST tangible sign. "Day 1" beats "3 months."</td></tr>
+      <tr>
+        <td><strong>Time Delay ↓</strong></td>
+        <td>How fast do they see the first result?</td>
+        <td><span class="fill"></span></td>
+      </tr>
+      <tr class="label-row"><td></td><td></td><td>Less is better. "Nothing — we do it for them" is the ideal answer.</td></tr>
+      <tr>
+        <td><strong>Effort &amp; Sacrifice ↓</strong></td>
+        <td>What do they have to DO or GIVE UP?</td>
+        <td><span class="fill"></span></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3>Part B: Your Problem → Solution List</h3>
+  <p style="font-size:0.88rem; margin-bottom:8px;">List every problem your client faces before, during, and after buying from you. Then name the solution you provide for each one.</p>
+
+  <table>
+    <thead>
+      <tr>
+        <th style="width:28px;">#</th>
+        <th style="width:46%;">Problem Your Client Has<span class="hint">Walk through their journey: before, during, and after buying from you</span></th>
+        <th>Your Named Solution<span class="hint">Format: "How to [result] without [pain]"</span></th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr class="label-row"><td></td><td>The #1 problem BEFORE they find you</td><td></td></tr>
+      <tr><td class="num">1</td><td><span class="fill"></span></td><td><span class="fill"></span></td></tr>
+      <tr class="label-row"><td></td><td>The #2 problem before they find you</td><td></td></tr>
+      <tr><td class="num">2</td><td><span class="fill"></span></td><td><span class="fill"></span></td></tr>
+      <tr class="label-row"><td></td><td>What they fear DURING buying (wasted money, learning curve, staff resistance)</td><td></td></tr>
+      <tr><td class="num">3</td><td><span class="fill"></span></td><td><span class="fill"></span></td></tr>
+      <tr class="label-row"><td></td><td>What they fear AFTER buying (doesn't work, stuck in contract)</td><td></td></tr>
+      <tr><td class="num">4</td><td><span class="fill"></span></td><td><span class="fill"></span></td></tr>
+      <tr class="label-row"><td></td><td>The objection they always raise</td><td></td></tr>
+      <tr><td class="num">5</td><td><span class="fill"></span></td><td><span class="fill"></span></td></tr>
+      <tr class="label-row"><td></td><td>What would make them feel stupid for NOT buying?</td><td></td></tr>
+      <tr><td class="num">6</td><td><span class="fill"></span></td><td><span class="fill"></span></td></tr>
+    </tbody>
+  </table>
+
+  <h3>Part C: Name Your Offer — MAGIC Formula</h3>
+  <p style="font-size:0.88rem; margin-bottom:8px;"><strong>M</strong>agnetic reason why + <strong>A</strong>vatar + <strong>G</strong>oal + <strong>I</strong>nterval + <strong>C</strong>ontainer word</p>
+
+  <table>
+    <thead>
+      <tr>
+        <th style="width:10%;">Part</th>
+        <th style="width:40%;">What to Write</th>
+        <th>Your Version</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>M</strong></td>
+        <td>Magnetic reason why<br><span style="font-size:0.78rem; color:#000; font-style:italic;">A timely trigger: season, deadline, regulation, event. Why NOW?</span></td>
+        <td><span class="fill"></span></td>
+      </tr>
+      <tr>
+        <td><strong>A</strong></td>
+        <td>Avatar<br><span style="font-size:0.78rem; color:#000; font-style:italic;">Who specifically? Not "everyone." More specific = more powerful.</span></td>
+        <td><span class="fill"></span></td>
+      </tr>
+      <tr>
+        <td><strong>G</strong></td>
+        <td>Goal<br><span style="font-size:0.78rem; color:#000; font-style:italic;">The dream outcome in 2–4 words</span></td>
+        <td><span class="fill"></span></td>
+      </tr>
+      <tr>
+        <td><strong>I</strong></td>
+        <td>Interval<br><span style="font-size:0.78rem; color:#000; font-style:italic;">How long until they see the result? Days, weeks, months?</span></td>
+        <td><span class="fill"></span></td>
+      </tr>
+      <tr>
+        <td><strong>C</strong></td>
+        <td>Container word<br><span style="font-size:0.78rem; color:#000; font-style:italic;">Blueprint, System, Accelerator, Shield, Playbook, Formula, Method…</span></td>
+        <td><span class="fill"></span></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <table style="margin-top:4px;">
+    <thead>
+      <tr>
+        <th style="background:var(--gold); color:#000 !important;">YOUR OFFER NAME — Combine all 5 parts<span class="hint" style="color:#000 !important; opacity:0.7;">e.g., "The 14-Day Compliance Shield" or "The 90-Day Revenue Accelerator for Lyon Restaurateurs"</span></th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td><span class="fill-tall"></span></td></tr>
+    </tbody>
+  </table>
+
+  <div class="page-footer">Building Your Clientele: Best Practices — Entrepreneur Lyon — November 13, 2026 &nbsp;|&nbsp; Page 7</div>
+</div>
+
+<!-- ════════════════════════════════════════════════════════════════ -->
+<!-- PAGE 8: FRAMEWORK 6 — YOUR 90-DAY ROCKS                       -->
+<!-- ════════════════════════════════════════════════════════════════ -->
+<div class="page">
+  <div class="page-header">Building Your Clientele: Best Practices</div>
+
+  <h2>Framework 6 — Your 90-Day Rocks</h2>
+  <p style="font-size:0.82rem; color:#000; margin-bottom:8px;">Source: Gino Wickman, <em>Traction / EOS</em></p>
+
+  <p class="intro">A Rock is the most important thing that must get done in the next 90 days. 3–7 Rocks maximum. Each has one owner and a measurable outcome. If it's not measurable, it's not a Rock — it's a wish.</p>
+
+  <table>
+    <thead>
+      <tr>
+        <th style="width:28px;">#</th>
+        <th style="width:32%;">Rock (What must get done in 90 days?)</th>
+        <th style="width:14%;">Owner</th>
+        <th style="width:28%;">Measurable Outcome</th>
+        <th style="width:12%;">Due Date</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="num">1</td>
+        <td><span class="fill">Your #1 priority for client acquisition in Q1 2027</span></td>
+        <td><span class="fill">Who is responsible? If you're solo, write your name.</span></td>
+        <td><span class="fill">How will you KNOW it's done? A number, a signed contract, a delivered demo.</span></td>
+        <td><span class="fill">Specific date</span></td>
+      </tr>
+      <tr>
+        <td class="num">2</td>
+        <td><span class="fill">Priority #2</span></td>
+        <td><span class="fill">Owner</span></td>
+        <td><span class="fill">Measurable outcome</span></td>
+        <td><span class="fill">Date</span></td>
+      </tr>
+      <tr>
+        <td class="num">3</td>
+        <td><span class="fill">Priority #3</span></td>
+        <td><span class="fill">Owner</span></td>
+        <td><span class="fill">Measurable outcome</span></td>
+        <td><span class="fill">Date</span></td>
+      </tr>
+      <tr>
+        <td class="num">4</td>
+        <td><span class="fill">Priority #4 — optional</span></td>
+        <td><span class="fill">Owner</span></td>
+        <td><span class="fill">Measurable outcome</span></td>
+        <td><span class="fill">Date</span></td>
+      </tr>
+      <tr>
+        <td class="num">5</td>
+        <td><span class="fill">Priority #5 — optional</span></td>
+        <td><span class="fill">Owner</span></td>
+        <td><span class="fill">Measurable outcome</span></td>
+        <td><span class="fill">Date</span></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3>Your Weekly Scorecard — 5 Numbers You Track Every Monday</h3>
+  <table>
+    <thead>
+      <tr>
+        <th style="width:8%;">#</th>
+        <th style="width:44%;">Metric &amp; Your Target</th>
+        <th>Why This Number Matters</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="num">1</td>
+        <td><span class="fill">e.g., "5 Dream 10 touches per week"</span></td>
+        <td><span class="fill">What does this number tell you about your pipeline health?</span></td>
+      </tr>
+      <tr>
+        <td class="num">2</td>
+        <td><span class="fill">e.g., "1 demo delivered per week"</span></td>
+        <td><span class="fill">Why?</span></td>
+      </tr>
+      <tr>
+        <td class="num">3</td>
+        <td><span class="fill">e.g., "2 pieces of content published"</span></td>
+        <td><span class="fill">Why?</span></td>
+      </tr>
+      <tr>
+        <td class="num">4</td>
+        <td><span class="fill">e.g., "2 referrals asked for"</span></td>
+        <td><span class="fill">Why?</span></td>
+      </tr>
+      <tr>
+        <td class="num">5</td>
+        <td><span class="fill">Choose your own — the number that matters most to YOUR business</span></td>
+        <td><span class="fill">Why?</span></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="note">
+    <strong>Wickman:</strong> "Vision without traction is merely hallucination." These 5 numbers are your traction.
+  </div>
+
+  <div class="page-footer">Building Your Clientele: Best Practices — Entrepreneur Lyon — November 13, 2026 &nbsp;|&nbsp; Page 8</div>
+</div>
+
+<!-- ════════════════════════════════════════════════════════════════ -->
+<!-- PAGE 9: FRAMEWORK 7 — YOUR ONE-PAGE STRATEGIC PLAN            -->
+<!-- ════════════════════════════════════════════════════════════════ -->
+<div class="page">
+  <div class="page-header">Building Your Clientele: Best Practices</div>
+
+  <h2>Framework 7 — Your One-Page Strategic Plan</h2>
+  <p style="font-size:0.82rem; color:#000; margin-bottom:8px;">Source: Verne Harnish, <em>Scaling Up</em></p>
+
+  <p class="intro">Harnish says every person in your company must be able to articulate who you serve and why you're different. This one-page plan forces clarity.</p>
+
+  <table>
+    <thead>
+      <tr>
+        <th style="width:30%;">Field</th>
+        <th>Your Answer</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>Your one-liner</strong></td>
+        <td><span class="fill-tall">In one sentence: what do you do, for whom, and why is it different? Test: could a stranger repeat this after hearing it once?</span></td>
+      </tr>
+      <tr>
+        <td><strong>Your ideal client</strong></td>
+        <td><span class="fill-tall">Be specific. Industry, size, location, pain. Not "any business" — the ONE type you serve best.</span></td>
+      </tr>
+      <tr>
+        <td><strong>Your brand promise</strong></td>
+        <td><span class="fill-tall">What do you guarantee your client will experience? Not a feature — a result.</span></td>
+      </tr>
+      <tr>
+        <td><strong>Your 3-year target</strong></td>
+        <td><span class="fill">Where do you want to be in 3 years? Revenue, client count, team size. One sentence.</span></td>
+      </tr>
+      <tr>
+        <td><strong>Your 1-year target</strong></td>
+        <td><span class="fill">Where do you want to be in 12 months? Same format.</span></td>
+      </tr>
+      <tr>
+        <td><strong>Your #1 priority this quarter</strong></td>
+        <td><span class="fill-tall">The single most important thing. If you could only accomplish ONE thing in the next 90 days, what is it?</span></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="note">
+    <strong>Harnish:</strong> "Growth sucks cash." Before you grow, know your Cash Conversion Cycle — how long between spending a euro and getting it back. If growth starves your cash, you'll fail with a full pipeline.
+  </div>
+
+  <div class="page-footer">Building Your Clientele: Best Practices — Entrepreneur Lyon — November 13, 2026 &nbsp;|&nbsp; Page 9</div>
+</div>
+
+<!-- ════════════════════════════════════════════════════════════════ -->
+<!-- PAGE 10: YOUR FIRST 8 WEEKS — ACTION PLAN                     -->
+<!-- ════════════════════════════════════════════════════════════════ -->
+<div class="page">
+  <div class="page-header">Building Your Clientele: Best Practices</div>
+
+  <h2>Your First 8 Weeks — Action Plan</h2>
+
+  <p class="intro">Take what you've written above and commit to a week-by-week execution plan. Write specific actions, not intentions. "Build the Dream 10 list" is an action. "Think about growth" is not.</p>
+
+  <table>
+    <thead>
+      <tr>
+        <th style="width:10%;">Week</th>
+        <th style="width:48%;">Action (be specific — WHO, WHAT, WHEN)</th>
+        <th style="width:22%;">Framework Used</th>
+        <th class="check" style="width:10%;">Done?</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>Week 1</strong></td>
+        <td><span class="fill">e.g., "Build Dream 10 list. Send first physical mail piece to all 10."</span></td>
+        <td><span class="fill">e.g., Holmes</span></td>
+        <td class="check">☐</td>
+      </tr>
+      <tr>
+        <td><strong>Week 2</strong></td>
+        <td><span class="fill">e.g., "Send Ross referral emails to 5 warm contacts from tonight's event."</span></td>
+        <td><span class="fill">e.g., Ross</span></td>
+        <td class="check">☐</td>
+      </tr>
+      <tr>
+        <td><strong>Week 3</strong></td>
+        <td><span class="fill">Specific action — name the person, the method, and the deadline</span></td>
+        <td><span class="fill">Framework</span></td>
+        <td class="check">☐</td>
+      </tr>
+      <tr>
+        <td><strong>Week 4</strong></td>
+        <td><span class="fill">Specific action — name the person, the method, and the deadline</span></td>
+        <td><span class="fill">Framework</span></td>
+        <td class="check">☐</td>
+      </tr>
+      <tr>
+        <td><strong>Week 5</strong></td>
+        <td><span class="fill">Specific action — name the person, the method, and the deadline</span></td>
+        <td><span class="fill">Framework</span></td>
+        <td class="check">☐</td>
+      </tr>
+      <tr>
+        <td><strong>Week 6</strong></td>
+        <td><span class="fill">Specific action — name the person, the method, and the deadline</span></td>
+        <td><span class="fill">Framework</span></td>
+        <td class="check">☐</td>
+      </tr>
+      <tr>
+        <td><strong>Week 7</strong></td>
+        <td><span class="fill">Specific action — name the person, the method, and the deadline</span></td>
+        <td><span class="fill">Framework</span></td>
+        <td class="check">☐</td>
+      </tr>
+      <tr>
+        <td><strong>Week 8</strong></td>
+        <td><span class="fill">Monday: review scorecard. What worked? What didn't? Adjust your Rocks and Scorecard for the next 8 weeks.</span></td>
+        <td><span class="fill">Wickman</span></td>
+        <td class="check">☐</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="page-footer">Building Your Clientele: Best Practices — Entrepreneur Lyon — November 13, 2026 &nbsp;|&nbsp; Page 10</div>
+</div>
+
+<!-- ════════════════════════════════════════════════════════════════ -->
+<!-- BACK COVER: SOURCE LIST                                        -->
+<!-- ════════════════════════════════════════════════════════════════ -->
+<div class="page">
+  <div class="page-header">Building Your Clientele: Best Practices</div>
+
+  <h2>Sources — Your Reading List</h2>
+  <p style="margin-bottom:16px;">Every framework in this workbook comes from a practitioner who built it in the field. If one framework resonated, read that book first.</p>
+
+  <ol class="sources">
+    <li><em>The Ultimate Sales Machine</em> — Chet Holmes (2007)</li>
+    <li><em>Predictable Revenue</em> — Aaron Ross &amp; Marylou Tyler (2011)</li>
+    <li><em>The Sales Acceleration Formula</em> — Mark Roberge (2015)</li>
+    <li><em>Fanatical Prospecting</em> — Jeb Blount (2015)</li>
+    <li><em>Endless Referrals</em> — Bob Burg (2005)</li>
+    <li><em>$100M Offers</em> — Alex Hormozi (2021)</li>
+    <li><em>Traction</em> — Gino Wickman (2012)</li>
+    <li><em>Blitzscaling</em> — Reid Hoffman &amp; Chris Yeh (2018)</li>
+    <li><em>Product-Led Growth</em> — Wes Bush (2019)</li>
+    <li><em>Scaling Up</em> — Verne Harnish (2014)</li>
+  </ol>
+
+  <div style="margin-top:60px; text-align:center; padding-top:30px; border-top:2px solid var(--gold);">
+    <p style="font-family:Georgia,'Times New Roman',Times,serif; font-size:1.3rem; color:#000; margin-bottom:6px;"><strong>Building Your Clientele: Best Practices</strong></p>
+    <p style="font-size:0.95rem; color:#000; margin-bottom:20px;">Entrepreneur Lyon — November 13, 2026</p>
+
+    <div class="cover-rule" style="width:60px; height:3px; background:var(--gold); margin:20px auto;"></div>
+
+    <p style="font-size:1rem; margin-bottom:4px;"><strong>Presented by Brian Cluff</strong></p>
+    <p style="font-size:0.95rem; color:#000;">wisb.fr</p>
+    <p style="font-size:0.92rem; color:#000; margin-top:12px;">Contact: ___________________________________</p>
+  </div>
+
+  <div class="page-footer">Building Your Clientele: Best Practices — Entrepreneur Lyon — November 13, 2026</div>
+</div>
+
+</body>
+</html>
